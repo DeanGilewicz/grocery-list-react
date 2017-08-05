@@ -1,9 +1,13 @@
 import React, { Component } from 'react';
+import AddGroceryItemForm from './AddGroceryItemForm';
 
 class Inventory extends Component {
 	render () {
 		return (
-			<p>Inventory here</p>
+			<div>
+				<h2>Inventory</h2>
+				<AddGroceryItemForm />
+			</div>
 		)
 	}
 }
