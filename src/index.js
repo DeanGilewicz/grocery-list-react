@@ -14,7 +14,6 @@ const Root = () => {
 	return (
 		<BrowserRouter>
 			<div>
-				<a href="/grocerylist/groceries">Take me to the list</a>
 				<Switch>
 					<Route 
 						exact 
