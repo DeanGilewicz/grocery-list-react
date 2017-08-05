@@ -6,7 +6,7 @@ class Inventory extends Component {
 		return (
 			<div>
 				<h2>Inventory</h2>
-				<AddGroceryItemForm />
+				<AddGroceryItemForm addItem={this.props.addItem} />
 			</div>
 		)
 	}

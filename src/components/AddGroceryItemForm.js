@@ -14,12 +14,13 @@ class AddGroceryItemForm extends Component {
 			onOrder: this.onOrder.value,
 			threshold: this.threshold.value
 		}
-		// console.log(item);
+		this.props.addItem(item);
+		this.itemForm.reset();
 	}
 
 	render() {
 		return (
-			<form action="" className="item-edit" onSubmit={ (e) => {this.createItem(e)} }>
+			<form action="" className="item-edit" ref={ (input) => {this.itemForm = input} } onSubmit={ (e) => {this.createItem(e)} }>
 				<input type="text" name="name" placeholder="Item Name" ref={ (input) => {this.name = input} } />
 				<input type="text" name="brand" placeholder="Item Brand" ref={ (input) => {this.brand = input} } />
 				<select name="type" id="" ref={ (input) => {this.type = input} }>
