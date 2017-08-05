@@ -19,11 +19,11 @@ const Root = () => {
 						exact 
 						path="/"
 						component={Login}
+						// render={ (match) => <Login routeInfo={match} /> }
 					/>
 					<Route 
 						exact
 						path="/grocerylist/:groceryListId"
-						// render={ (match) => <nameOfComponent /> }
 						component={App}
 					/>
 					<Route component={NotFound} />

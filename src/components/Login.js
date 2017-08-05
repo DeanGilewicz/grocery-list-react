@@ -4,8 +4,9 @@ class Login extends Component {
 
 	goToList(e) {
 		e.preventDefault();
-		console.log(this.groceryListNameInput.value);
-		// /grocerylist/groceries
+		let groceryListName = this.groceryListNameInput.value;
+		// go to the associated grocery list
+		this.props.history.push(`/grocerylist/${groceryListName}`);
 	}
 
 	render() {
