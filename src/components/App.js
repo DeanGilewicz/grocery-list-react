@@ -14,7 +14,9 @@ class App extends Component {
 
 	// bind methods to component
 	this.loadSampleItems = this.loadSampleItems.bind(this);
+	
 	this.addItem = this.addItem.bind(this);
+	this.addToList = this.addToList.bind(this);
 
 	// initial state
 	this.state = {
@@ -39,6 +41,15 @@ class App extends Component {
   	this.setState({ items: items });
   }
 
+  addToList(key) {
+  	// copy existing state
+  	const list = {...this.state.list};
+  	// update or add new number of item ordered
+  	list[key] = list[key] + 1 || 1;
+  	// update state
+  	this.setState({ list: list });
+  }
+
   render() {
 	return (
 		<div className="App">
@@ -49,7 +60,7 @@ class App extends Component {
 				{
 					Object
 						.keys(this.state.items)
-						.map(key => <Item key={key} details={this.state.items[key]} />)
+						.map(key => <Item key={key} index={key} details={this.state.items[key]} addToList={this.addToList} />)
 				}
 			</ul>
 		</div>
