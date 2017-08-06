@@ -44,10 +44,15 @@ class App extends Component {
   addToList(key) {
   	// copy existing state
   	const list = {...this.state.list};
-  	// update or add new number of item ordered
-  	list[key] = list[key] + 1 || 1;
-  	// update state
-  	this.setState({ list: list });
+  	// copy existing state
+  	const items = {...this.state.items}
+  	// update onOrder property of this item
+  	items[key].onOrder = items[key].onOrder + 1 || 1;
+  	// update or add new number of item ordered to list
+  	list[key] = items[key].onOrder;
+  	// list[key] = list[key] + 1 || 1;
+  	// update states for both list and items
+  	this.setState({ list: list, items: items });
   }
 
   render() {
@@ -55,7 +60,7 @@ class App extends Component {
 		<div className="App">
 			<Header tagline="Grocery List" />
 			<Inventory loadSampleItems={this.loadSampleItems} addItem={this.addItem} />
-			<List />
+			<List list={this.state.list} items={this.state.items} />
 			<ul>
 				{
 					Object
