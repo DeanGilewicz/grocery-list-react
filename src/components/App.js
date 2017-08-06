@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Header from './Header';
 import Inventory from './Inventory';
 import List from './List';
+import Item from './Item';
 
 // mock data
 import sampleItems from '../sample-items';
@@ -24,7 +25,6 @@ class App extends Component {
   }
 
   // mock data - items
-
   loadSampleItems() {
   	this.setState({ items: sampleItems });
   }
@@ -45,6 +45,13 @@ class App extends Component {
 			<Header tagline="Grocery List" />
 			<Inventory loadSampleItems={this.loadSampleItems} addItem={this.addItem} />
 			<List />
+			<ul>
+				{
+					Object
+						.keys(this.state.items)
+						.map(key => <Item key={key} details={this.state.items[key]} />)
+				}
+			</ul>
 		</div>
 	);
   }
