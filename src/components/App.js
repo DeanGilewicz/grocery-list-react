@@ -3,12 +3,16 @@ import Header from './Header';
 import Inventory from './Inventory';
 import List from './List';
 
+// mock data
+import sampleItems from '../sample-items';
+
 class App extends Component {
 
   constructor() {
 	super();
 
 	// bind methods to component
+	this.loadSampleItems = this.loadSampleItems.bind(this);
 	this.addItem = this.addItem.bind(this);
 
 	// initial state
@@ -16,6 +20,13 @@ class App extends Component {
 		items: {},
 		list: {}
 	}
+
+  }
+
+  // mock data - items
+
+  loadSampleItems() {
+  	this.setState({ items: sampleItems });
   }
 
   addItem(item) {
@@ -32,7 +43,7 @@ class App extends Component {
 	return (
 		<div className="App">
 			<Header tagline="Grocery List" />
-			<Inventory addItem={this.addItem} />
+			<Inventory loadSampleItems={this.loadSampleItems} addItem={this.addItem} />
 			<List />
 		</div>
 	);
