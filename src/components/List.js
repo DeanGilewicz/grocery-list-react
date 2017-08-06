@@ -19,6 +19,7 @@ class List extends Component {
 				<span>{item.brand} - {item.type}</span>
 				<button onClick={ () => {this.props.increaseItemOnList(key) } }>+</button>
 				{decreaseButton}
+				<button onClick={ () => {this.props.removeFromList(key)} }>&times;</button>
 			</li>
 		)
 	}
