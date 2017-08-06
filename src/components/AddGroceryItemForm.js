@@ -10,9 +10,10 @@ class AddGroceryItemForm extends Component {
 			type: this.type.value,
 			description: this.description.value,
 			image: this.image.value,
-			remaining: this.remaining.value,
-			onOrder: this.onOrder.value,
-			threshold: this.threshold.value
+			stock: this.stock.value,
+			quantity: 0,
+			threshold: this.threshold.value,
+			onOrder: false
 		}
 		this.props.addItem(item);
 		this.itemForm.reset();
@@ -33,8 +34,7 @@ class AddGroceryItemForm extends Component {
 				</select>
 				<textarea placeholder="Item Description" ref={ (input) => {this.description = input} }></textarea>
 				<input type="text" name="image" placeholder="Item Image" ref={ (input) => {this.image = input} } />
-				<input type="text" name="remaining" placeholder="Item Remaining" ref={ (input) => {this.remaining = input} } />
-				<input type="text" name="onOrder" placeholder="Item OnOrder" ref={ (input) => {this.onOrder = input} } />
+				<input type="text" name="remaining" placeholder="Item Stock" ref={ (input) => {this.stock = input} } />
 				<input type="text" name="threshold" placeholder="Item Threshold" ref={ (input) => {this.threshold = input} } />
 				<button type="submit">+ Add Item</button>
 			</form>

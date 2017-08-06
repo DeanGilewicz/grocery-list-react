@@ -10,14 +10,15 @@ class List extends Component {
 	renderList(key) {
 		const item = this.props.items[key];
 		const count = this.props.list[key];
+		const decreaseButton = (item.quantity > 1) ? <button onClick={ () => {this.props.decreaseItemOnList(key) } }>-</button> : '';
 
 		return (
 			<li key={key}>
 				<span>{item.name}: </span>
 				<strong>{count}</strong><br/>
 				<span>{item.brand} - {item.type}</span>
-				<button onClick={() => {this.props.increaaseItemOnList(key)} }>+</button>
-				<button onClick={() => {this.props.decreaseItemOnList(key)} }>-</button>
+				<button onClick={ () => {this.props.increaseItemOnList(key) } }>+</button>
+				{decreaseButton}
 			</li>
 		)
 	}
