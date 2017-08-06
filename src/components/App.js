@@ -7,6 +7,9 @@ import Item from './Item';
 // mock data
 import sampleItems from '../sample-items';
 
+// firebase
+import base from '../base';
+
 class App extends Component {
 
 	constructor() {
@@ -32,6 +35,17 @@ class App extends Component {
 			list: {}
 		}
 
+	}
+
+	componentWillMount() {
+		this.refItems = base.syncState(`${this.props.match.params.groceryListId}/items`, {
+			context: this,
+			state: 'items' 
+		});
+	}
+
+	componentWillUnmount() {
+		base.removeBinding(this.refItems);
 	}
 
 	// mock data - items
