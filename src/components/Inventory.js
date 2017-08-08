@@ -38,6 +38,7 @@ class Inventory extends Component {
 				<input type="text" name="image" value={item.image} placeholder="" onChange={ (e) => {this.handleChange(e, key)} } />
 				<input type="text" name="stock" value={item.stock} placeholder="" onChange={ (e) => {this.handleChange(e, key)} } />
 				<input type="text" name="threshold" value={item.threshold} placeholder="" onChange={ (e) => {this.handleChange(e, key)} } />
+				<button onClick={ () => {this.props.deleteItem(key)} }>Delete Item</button>
 			</div>
 		)
 	}

@@ -21,6 +21,7 @@ class App extends Component {
 		// inventory component
 		this.addItem = this.addItem.bind(this);
 		this.updateItem = this.updateItem.bind(this);
+		this.deleteItem = this.deleteItem.bind(this);
 
 		// item component
 		this.addToList = this.addToList.bind(this);
@@ -87,9 +88,21 @@ class App extends Component {
 	}
 
 	// delete an item
-	// removeItem() {
-	// 	list[key] = null; // firebase way
-	// }
+	deleteItem(key) {
+		// copy existing state
+		const list = {...this.state.list};
+		// copy existing state
+		const items = {...this.state.items}
+		// delete items[key]; // typical way
+		items[key] = null; // firebase way
+		// check if item exists on list - if it does then remove it and provide info to user
+		if( list[key] ) {
+			delete list[key];
+			// TODO: inform user item was removed from list since deleted
+		}
+		// update state for items
+		this.setState({ items: items, list: list });
+	}
 
 	// initially add item to list with quantity value of 1
 	addToList(key) {
@@ -157,13 +170,14 @@ class App extends Component {
 				<Header tagline="Grocery List" />
 				<Inventory
 					loadSampleItems={this.loadSampleItems}
-					addItem={this.addItem}
 					items={this.state.items}
+					addItem={this.addItem}
 					updateItem={this.updateItem}
+					deleteItem={this.deleteItem}
 				/>
 				<List 
-					list={this.state.list}
 					items={this.state.items}
+					list={this.state.list}
 					increaseItemOnList={this.increaseItemOnList}
 					decreaseItemOnList={this.decreaseItemOnList}
 					removeFromList={this.removeFromList} 
