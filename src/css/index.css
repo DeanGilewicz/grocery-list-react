@@ -5,3 +5,25 @@ html {
 body {
 	min-height: 100%;
 }
+
+body * {
+	box-sizing: border-box;
+}
+
+.app {
+	padding-left: 0.9375rem;
+	padding-right: 0.9375rem;
+}
+
+.menu {
+	background: red;
+}
+
+.inventory__form-add input {
+	display: block;
+}
+
+.inventory__form-add select {
+	display: block;
+	/*width: 100%;*/
+}

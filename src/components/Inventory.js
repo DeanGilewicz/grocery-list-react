@@ -7,6 +7,12 @@ class Inventory extends Component {
 		super();
 		this.rendorInventory = this.rendorInventory.bind(this);
 		this.handleChange = this.handleChange.bind(this);
+
+		this.state = {
+			isAddItem: false,
+			isViewItems: false
+		}
+
 	}
 
 	handleChange(e, key) {
@@ -44,15 +50,34 @@ class Inventory extends Component {
 	}
 
 	render () {
-		return (
-			<div>
-				<h2>Inventory</h2>
-				{Object.keys(this.props.items).map(this.rendorInventory)}
-				<AddGroceryItemForm addItem={this.props.addItem} />
-				<button onClick={this.props.loadSampleItems}>Load Sample Items</button>
-			</div>
-		)
+		if( !this.state.isAddItem && !this.state.isViewItems ) {
+			return (
+				<div className="inventory">
+					<h2>Inventory</h2>
+					<button onClick={ () => this.setState({ isAddItem: true }) }>Add Item</button>
+					<button onClick={ () => this.setState({ isViewItems: true }) }>View Items</button>
+				</div>
+			)
+		} else if( this.state.isAddItem && !this.state.isViewItems ) {
+			return (
+				<div>
+					<h2>Inventory</h2>
+					<AddGroceryItemForm addItem={this.props.addItem} />
+					<button onClick={ () => this.setState({ isAddItem: false }) }>Cancel</button>
+					<button onClick={this.props.loadSampleItems}>Load Sample Items</button>
+				</div>
+			)
+		} else if( !this.state.isAddItem && this.state.isViewItems ) {
+			return (
+				<div>
+					<h2>Inventory</h2>
+					<button onClick={ () => this.setState({ isViewItems: false }) }>Cancel</button>
+					{Object.keys(this.props.items).map(this.rendorInventory)}
+				</div>
+			)
+		}
 	}
+
 }
 
 export default Inventory;
