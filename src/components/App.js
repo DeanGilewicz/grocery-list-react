@@ -20,6 +20,7 @@ class App extends Component {
 
 		// inventory component
 		this.addItem = this.addItem.bind(this);
+		this.updateItem = this.updateItem.bind(this);
 
 		// item component
 		this.addToList = this.addToList.bind(this);
@@ -42,10 +43,24 @@ class App extends Component {
 			context: this,
 			state: 'items' 
 		});
+
+		// check if there is any list in localStorage
+    	const localStorageRef = JSON.parse(localStorage.getItem(`list-${this.props.match.params.groceryListId}`));
+
+		if( localStorageRef ) {
+			// update our App component's list state
+			this.setState({
+				list: localStorageRef
+			});
+		}
 	}
 
 	componentWillUnmount() {
 		base.removeBinding(this.refItems);
+	}
+
+	componentWillUpdate(nextProps, nextState) {
+		localStorage.setItem(`list-${this.props.match.params.groceryListId}`, JSON.stringify(nextState.list));
 	}
 
 	// mock data - items
@@ -53,6 +68,7 @@ class App extends Component {
 		this.setState({ items: sampleItems });
 	}
 
+	// add new item
 	addItem(item) {
 		// copy existing state
 		const items = {...this.state.items};
@@ -62,6 +78,18 @@ class App extends Component {
 		// set state
 		this.setState({ items: items });
 	}
+
+	// update an existing item
+	updateItem(key, updatedItem) {
+		const items = {...this.state.items};
+		items[key] = updatedItem;
+		this.setState({ items: items });
+	}
+
+	// delete an item
+	// removeItem() {
+	// 	list[key] = null; // firebase way
+	// }
 
 	// initially add item to list with quantity value of 1
 	addToList(key) {
@@ -90,8 +118,7 @@ class App extends Component {
 		// update quantity property of this item
 		items[key].quantity = items[key].quantity = 0;
 		// remove item from list
-		delete list[key]; // typical way
-		// list[key] = null; // firebase way
+		delete list[key];
 		// update states for both list and items
 		this.setState({ list: list, items: items });
 	}
@@ -123,19 +150,35 @@ class App extends Component {
 		// update states for both list and items
 		this.setState({ list: list, items: items });
 	}
-
   
 	render() {
 		return (
 			<div className="App">
 				<Header tagline="Grocery List" />
-				<Inventory loadSampleItems={this.loadSampleItems} addItem={this.addItem} />
-				<List list={this.state.list} items={this.state.items} increaseItemOnList={this.increaseItemOnList} decreaseItemOnList={this.decreaseItemOnList} removeFromList={this.removeFromList} />
+				<Inventory
+					loadSampleItems={this.loadSampleItems}
+					addItem={this.addItem}
+					items={this.state.items}
+					updateItem={this.updateItem}
+				/>
+				<List 
+					list={this.state.list}
+					items={this.state.items}
+					increaseItemOnList={this.increaseItemOnList}
+					decreaseItemOnList={this.decreaseItemOnList}
+					removeFromList={this.removeFromList} 
+				/>
 				<ul>
 					{
 						Object
 							.keys(this.state.items)
-							.map(key => <Item key={key} index={key} details={this.state.items[key]} addToList={this.addToList} />)
+							.map(key => 
+								<Item key={key}
+									index={key}
+									details={this.state.items[key]}
+									addToList={this.addToList}
+								/>
+							)
 					}
 				</ul>
 			</div>

@@ -34,7 +34,7 @@ class AddGroceryItemForm extends Component {
 				</select>
 				<textarea placeholder="Item Description" ref={ (input) => {this.description = input} }></textarea>
 				<input type="text" name="image" placeholder="Item Image" ref={ (input) => {this.image = input} } />
-				<input type="text" name="remaining" placeholder="Item Stock" ref={ (input) => {this.stock = input} } />
+				<input type="text" name="stock" placeholder="Item Stock" ref={ (input) => {this.stock = input} } />
 				<input type="text" name="threshold" placeholder="Item Threshold" ref={ (input) => {this.threshold = input} } />
 				<button type="submit">+ Add Item</button>
 			</form>

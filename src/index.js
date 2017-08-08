@@ -25,6 +25,7 @@ const Root = () => {
 						exact
 						path="/grocerylist/:groceryListId"
 						component={App}
+						// render={ (match) => <App match={match} /> }
 					/>
 					<Route component={NotFound} />
 				</Switch>
