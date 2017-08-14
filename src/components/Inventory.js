@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 import AddGroceryItemForm from './AddGroceryItemForm';
+import Item from './Item';
+import List from './List';
+
 
 class Inventory extends Component {
 
@@ -9,8 +12,9 @@ class Inventory extends Component {
 		this.handleChange = this.handleChange.bind(this);
 
 		this.state = {
+			isViewInventory: false,
 			isAddItem: false,
-			isViewItems: false
+			isEditItems: false
 		}
 
 	}
@@ -50,15 +54,16 @@ class Inventory extends Component {
 	}
 
 	render () {
-		if( !this.state.isAddItem && !this.state.isViewItems ) {
+		if( !this.state.isAddItem && !this.state.isEditItems && !this.state.isViewInventory) {
 			return (
 				<div className="inventory">
 					<h2>Inventory</h2>
-					<button onClick={ () => this.setState({ isAddItem: true }) }>Add Item</button>
-					<button onClick={ () => this.setState({ isViewItems: true }) }>View Items</button>
+					<button onClick={ () => this.setState({ isAddItem: true }) }>Add An Item</button>
+					<button onClick={ () => this.setState({ isEditItems: true }) }>Edit Items</button>
+					<button onClick={ () => this.setState({ isViewInventory: true }) }>View Items</button>
 				</div>
 			)
-		} else if( this.state.isAddItem && !this.state.isViewItems ) {
+		} else if( this.state.isAddItem && !this.state.isEditItems && !this.state.isViewInventory) {
 			return (
 				<div>
 					<h2>Inventory</h2>
@@ -67,12 +72,31 @@ class Inventory extends Component {
 					<button onClick={this.props.loadSampleItems}>Load Sample Items</button>
 				</div>
 			)
-		} else if( !this.state.isAddItem && this.state.isViewItems ) {
+		} else if( !this.state.isAddItem && this.state.isEditItems && !this.state.isViewInventory) {
 			return (
 				<div>
 					<h2>Inventory</h2>
-					<button onClick={ () => this.setState({ isViewItems: false }) }>Cancel</button>
+					<button onClick={ () => this.setState({ isEditItems: false }) }>Cancel</button>
 					{Object.keys(this.props.items).map(this.rendorInventory)}
+				</div>
+			)
+		} else if( this.state.isViewInventory) {
+			return (
+				<div>
+					<button onClick={ () => this.setState({ isViewInventory: false }) }>Hide Items</button>
+					<ul className="items_available">
+						{
+							Object
+								.keys(this.props.items)
+								.map(key => 
+									<Item key={key}
+										index={key}
+										details={this.props.items[key]}
+										addToList={this.props.addToList}
+									/>
+								)
+						}
+					</ul>
 				</div>
 			)
 		}

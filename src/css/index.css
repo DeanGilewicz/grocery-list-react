@@ -16,7 +16,7 @@ body * {
 }
 
 .menu {
-	background: red;
+
 }
 
 .inventory__form-add input {
@@ -25,5 +25,37 @@ body * {
 
 .inventory__form-add select {
 	display: block;
-	/*width: 100%;*/
+}
+
+.items_available {
+	list-style-type: none;
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	margin: 0;
+	padding: 0;
+}
+
+.items_available li {
+	width: 23%;
+	margin: 0 1% 20px;
+	padding: 20px;
+	border: 1px solid #ccc;
+}
+
+.item__image {
+	width: 100%;
+	height: 100px;
+	background-repeat: no-repeat;
+	background-size: contain;
+	background-position: center;
+}
+
+.item__category {
+	font-weight: bold;
+	text-transform: uppercase;
+}
+
+.items_available img {
+	max-width: 100px;
 }

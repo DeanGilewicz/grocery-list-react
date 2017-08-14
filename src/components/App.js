@@ -168,15 +168,6 @@ class App extends Component {
 		return (
 			<div className="app">
 				<Header tagline={`${this.props.match.params.groceryListId}`} />
-				<div className="menu">
-					<Inventory
-						loadSampleItems={this.loadSampleItems}
-						items={this.state.items}
-						addItem={this.addItem}
-						updateItem={this.updateItem}
-						deleteItem={this.deleteItem}
-					/>
-				</div>
 				<div className="list">
 					<List 
 						items={this.state.items}
@@ -185,7 +176,17 @@ class App extends Component {
 						decreaseItemOnList={this.decreaseItemOnList}
 						removeFromList={this.removeFromList} 
 					/>
-					<ul>
+				</div>
+				<div className="menu">
+					<Inventory
+						loadSampleItems={this.loadSampleItems}
+						items={this.state.items}
+						addItem={this.addItem}
+						updateItem={this.updateItem}
+						deleteItem={this.deleteItem}
+						addToList={this.addToList}
+					/>
+					{/*<ul className="items_available">
 						{
 							Object
 								.keys(this.state.items)
@@ -197,7 +198,7 @@ class App extends Component {
 									/>
 								)
 						}
-					</ul>
+					</ul>*/}
 				</div>
 			</div>
 		);
