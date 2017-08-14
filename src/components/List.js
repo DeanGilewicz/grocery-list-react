@@ -18,27 +18,38 @@ class List extends Component {
 
 		return (
 			<li key={key}>
-				<span>{item.name}: </span>
-				<strong>{count}</strong><br/>
-				<span>{item.brand} - {item.type}</span>
-				<button onClick={ () => {this.props.increaseItemOnList(key) } }>+</button>
-				{decreaseButton}
-				<button onClick={ () => {this.props.removeFromList(key)} }>&times;</button>
+				<span>{count}</span>
+				<span>{item.name}</span>
+				<span>{item.brand}</span>
+				<span>{item.type}</span>
+				<span>
+					<button onClick={ () => {this.props.increaseItemOnList(key)} }>+</button>
+					{decreaseButton}
+					<button onClick={ () => {this.props.removeFromList(key)} }>&times;</button>
+				</span>
 			</li>
 		)
 	}
 
 	render () {
 		const listIds = Object.keys(this.props.list);
-		return (
-			<div className="order">
-				<h2>My List</h2>
-				<ul>
-					{listIds.map(this.renderList)}
-				</ul>
-			</div>
-		)
+		if( typeof listIds !== 'undefined' && listIds.length > 0 ) {
+			return (
+				<div className="order">
+					<ul>
+						{listIds.map(this.renderList)}
+					</ul>
+				</div>
+			)
+		} else {
+			return (
+				<div className="order">
+					<p>--- There are currently no items on your list ---</p>
+				</div>
+			)
+		}
 	}
+
 }
 
 export default List;

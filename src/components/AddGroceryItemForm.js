@@ -46,8 +46,8 @@ class AddGroceryItemForm extends Component {
 						<label htmlFor="threshold">Threshold:</label>
 						<input type="text" name="threshold" placeholder="Item Threshold" id="threshold" ref={ (input) => {this.threshold = input} } />
 						<div className="inventory_modal_add_content_actions">
-							<button className="btn btn_cancel" onClick={ () => {this.props.cancelAddItem} }>Cancel</button>
-							<button className="btn btn_submit" type="submit">Add</button>
+							<button type="button" className="btn btn_cancel" onClick={this.props.cancelAddItem}>Cancel</button>
+							<button type="submit" className="btn btn_submit">Add</button>
 						</div>
 					</div>
 				</div>

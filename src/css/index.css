@@ -110,6 +110,34 @@ body * {
 }
 
 
+.order ul {
+	list-style-type: none;
+	display: table;
+	width: 100%;
+	margin: 0;
+	padding: 0;
+}
+
+.order li {
+	display: table-row;
+}
+
+.order li span {
+	display: table-cell;
+}
+
+.order li span:last-child {
+	text-align: right;
+}
+
+.order li:nth-child(odd) {
+	background-color: #ffffff;
+}
+
+.order li:nth-child(even) {
+	background-color: #cccccc;
+}
+
 
 
 
