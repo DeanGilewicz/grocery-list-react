@@ -8,6 +8,7 @@ class Inventory extends Component {
 		super();
 
 		this.addItem = this.addItem.bind(this);
+		this.cancelAddItem = this.cancelAddItem.bind(this);
 
 		this.state = {
 			isViewInventory: false,
@@ -20,6 +21,10 @@ class Inventory extends Component {
 		// delete item
 		this.props.addItem(item);
 		// update component state
+		this.setState({ isAddItem: false });
+	}
+
+	cancelAddItem() {
 		this.setState({ isAddItem: false });
 	}
 
@@ -36,8 +41,7 @@ class Inventory extends Component {
 			return (
 				<div>
 					<h2>Inventory</h2>
-					<AddGroceryItemForm addItem={this.addItem} />
-					<button onClick={ () => this.setState({ isAddItem: false }) }>Cancel</button>
+					<AddGroceryItemForm addItem={this.addItem} cancelAddItem={this.cancelAddItem} />
 					<button onClick={this.props.loadSampleItems}>Load Sample Items</button>
 				</div>
 			)			
