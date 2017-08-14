@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Header from './Header';
 import Inventory from './Inventory';
 import List from './List';
-import Item from './Item';
+// import Item from './Item';
 
 // mock data
 import sampleItems from '../sample-items';
