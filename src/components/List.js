@@ -14,18 +14,24 @@ class List extends Component {
 		// return if no item found
 		if( !item ) { return; }
 		
-		const decreaseButton = (item.quantity > 1) ? <button onClick={ () => {this.props.decreaseItemOnList(key) } }>-</button> : '';
+		const decreaseButton = (item.quantity > 1) ? <button disabled={item.isComplete} onClick={ () => {this.props.decreaseItemOnList(key) } }>-</button> : '';
+		const statusButton = (item.isComplete) ? <button onClick={ () => {this.props.markItemIncomplete(key)} }>Incomplete</button> : <button onClick={ () => {this.props.markItemComplete(key)} }>Complete</button>;
 
 		return (
 			<li key={key}>
-				<span>{count}</span>
+				<span>
+					<button onClick={ () => {this.props.removeFromList(key)} }>&times;</button>
+				</span>
+				<span>
+					{decreaseButton}
+					{count}
+					<button disabled={item.isComplete} onClick={ () => {this.props.increaseItemOnList(key)} }>+</button>
+				</span>
 				<span>{item.name}</span>
 				<span>{item.brand}</span>
 				<span>{item.type}</span>
 				<span>
-					<button onClick={ () => {this.props.increaseItemOnList(key)} }>+</button>
-					{decreaseButton}
-					<button onClick={ () => {this.props.removeFromList(key)} }>&times;</button>
+					{statusButton}
 				</span>
 			</li>
 		)
@@ -36,6 +42,7 @@ class List extends Component {
 		if( typeof listIds !== 'undefined' && listIds.length > 0 ) {
 			return (
 				<div className="order">
+					<button onClick={ () => {this.props.clearAllItemsFromList(listIds)} }>Clear List</button>
 					<ul>
 						{listIds.map(this.renderList)}
 					</ul>

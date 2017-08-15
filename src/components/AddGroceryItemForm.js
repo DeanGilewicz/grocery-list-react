@@ -13,7 +13,8 @@ class AddGroceryItemForm extends Component {
 			stock: this.stock.value,
 			quantity: 0,
 			threshold: this.threshold.value,
-			onOrder: false
+			onOrder: false,
+			isComplete: false
 		}
 		this.props.addItem(item);
 		this.itemForm.reset();
@@ -42,7 +43,7 @@ class AddGroceryItemForm extends Component {
 						<label htmlFor="image">Image:</label>
 						<input type="text" name="image" placeholder="Item Image" id="image" ref={ (input) => {this.image = input} } />
 						<label htmlFor="stock">Stock:</label>
-						<input type="text" name="stock" placeholder="Item Stock" id="stock" ref={ (input) => {this.stock = input} } />
+						<input type="number" name="stock" placeholder="Item Stock" id="stock" ref={ (input) => {this.stock = input} } />
 						<label htmlFor="threshold">Threshold:</label>
 						<input type="text" name="threshold" placeholder="Item Threshold" id="threshold" ref={ (input) => {this.threshold = input} } />
 						<div className="inventory_modal_add_content_actions">

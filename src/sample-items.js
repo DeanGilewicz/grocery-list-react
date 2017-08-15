@@ -9,7 +9,8 @@ module.exports = {
 		stock: 2,
 		quantity: 0,
 		threshold: 5,
-		onOrder: false
+		onOrder: false,
+		isComplete: false
 	},
 
 	item2: {
@@ -21,7 +22,8 @@ module.exports = {
 		stock: 1,
 		quantity: 0,
 		threshold: 1,
-		onOrder: false
+		onOrder: false,
+		isComplete: false
 	},
 
 	item3: {
@@ -33,7 +35,8 @@ module.exports = {
 		stock: 0,
 		quantity: 0,
 		threshold: 1,
-		onOrder: false
+		onOrder: false,
+		isComplete: false
 	},
 
 	item4: {
@@ -45,7 +48,8 @@ module.exports = {
 		stock: 0,
 		quantity: 0,
 		threshold: 2,
-		onOrder: false
+		onOrder: false,
+		isComplete: false
 	},
 
 	item5: {
@@ -57,7 +61,8 @@ module.exports = {
 		stock: 0,
 		quantity: 0,
 		threshold: 1,
-		onOrder: false
+		onOrder: false,
+		isComplete: false
 	},
 
 	item6: {
@@ -69,7 +74,8 @@ module.exports = {
 		stock: 0,
 		quantity: 0,
 		threshold: 2,
-		onOrder: false
+		onOrder: false,
+		isComplete: false
 	},
 
 	item7: {
@@ -81,7 +87,8 @@ module.exports = {
 		stock: 0,
 		quantity: 0,
 		threshold: 2,
-		onOrder: false
+		onOrder: false,
+		isComplete: false
 	},
 
 	item8: {
@@ -93,7 +100,8 @@ module.exports = {
 		stock: 0,
 		quantity: 0,
 		threshold: 2,
-		onOrder: false
+		onOrder: false,
+		isComplete: false
 	},
 
 	item9: {
@@ -105,6 +113,7 @@ module.exports = {
 		stock: 0,
 		quantity: 0,
 		threshold: 1,
-		onOrder: false
+		onOrder: false,
+		isComplete: false
 	}
 };

@@ -48,6 +48,7 @@ class Inventory extends Component {
 		} else if( !this.state.isAddItem && this.state.isViewInventory) {
 			return (
 				<div>
+					<h2>Inventory</h2>
 					<button onClick={ () => this.setState({ isViewInventory: false }) }>Hide Items</button>
 					<ul className="items_available">
 						{

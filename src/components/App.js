@@ -30,6 +30,9 @@ class App extends Component {
 		this.increaseItemOnList = this.increaseItemOnList.bind(this);
 		this.decreaseItemOnList = this.decreaseItemOnList.bind(this);
 		this.removeFromList = this.removeFromList.bind(this);
+		this.markItemComplete = this.markItemComplete.bind(this);
+		this.markItemIncomplete = this.markItemIncomplete.bind(this);
+		this.clearAllItemsFromList = this.clearAllItemsFromList.bind(this);
 
 		// initial state
 		this.state = {
@@ -129,7 +132,9 @@ class App extends Component {
 		// update onOrder property of this item since now removed from list
 		items[key].onOrder = false;
 		// update quantity property of this item
-		items[key].quantity = items[key].quantity = 0;
+		items[key].quantity = 0;
+		// update isComplete prop in case item has been completed
+		items[key].isComplete = false;
 		// remove item from list
 		delete list[key];
 		// update states for both list and items
@@ -163,6 +168,45 @@ class App extends Component {
 		// update states for both list and items
 		this.setState({ list: list, items: items });
 	}
+
+	markItemComplete(key) {
+		// copy existing state
+		const items = {...this.state.items};
+		// add quantity to current stock
+		items[key].stock += items[key].quantity;
+		// update isComplete Property
+		items[key].isComplete = true;
+		// update state for items
+		this.setState({ items: items });
+	}
+
+	markItemIncomplete(key) {
+		// copy existing state
+		const items = {...this.state.items};
+		// remove quantity from current stock
+		items[key].stock -= items[key].quantity;
+		// update isComplete Property
+		items[key].isComplete = false;
+		// update state for items
+		this.setState({ items: items });
+	}
+
+	clearAllItemsFromList(itemIds) {
+		// copy existing state
+		let list = {...this.state.list};
+		// copy existing state
+		const items = {...this.state.items}
+		// update list state (clear localStorage)
+		list = {};
+		// reset item properties - loop through items based on itemIds provided
+		itemIds.forEach( (itemId) => {
+			items[itemId].onOrder = false; 
+			items[itemId].isComplete = false;
+			items[itemId].quantity = 0; 
+		});
+		// update state for items
+		this.setState({ list: list, items: items });
+	}
   
 	render() {
 		return (
@@ -174,7 +218,10 @@ class App extends Component {
 						list={this.state.list}
 						increaseItemOnList={this.increaseItemOnList}
 						decreaseItemOnList={this.decreaseItemOnList}
-						removeFromList={this.removeFromList} 
+						removeFromList={this.removeFromList}
+						markItemComplete={this.markItemComplete}
+						markItemIncomplete={this.markItemIncomplete}
+						clearAllItemsFromList={this.clearAllItemsFromList}
 					/>
 				</div>
 				<div className="menu">
