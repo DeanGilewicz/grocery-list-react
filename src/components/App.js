@@ -34,6 +34,10 @@ class App extends Component {
 		this.markItemIncomplete = this.markItemIncomplete.bind(this);
 		this.clearAllItemsFromList = this.clearAllItemsFromList.bind(this);
 
+		// app component
+		this.sortItemsOnList = this.sortItemsOnList.bind(this);
+		this.sortFn = this.sortFn.bind(this);
+
 		// initial state
 		this.state = {
 			items: {},
@@ -95,7 +99,7 @@ class App extends Component {
 		// copy existing state
 		const list = {...this.state.list};
 		// copy existing state
-		const items = {...this.state.items}
+		const items = {...this.state.items};
 		// delete items[key]; // typical way
 		items[key] = null; // firebase way
 		// check if item exists on list - if it does then remove it and provide info to user
@@ -112,7 +116,7 @@ class App extends Component {
 		// copy existing state
 		const list = {...this.state.list};
 		// copy existing state
-		const items = {...this.state.items}
+		const items = {...this.state.items};
 		// update onOrder property of this item since now on list
 		items[key].onOrder = true;
 		// update quantity property of this item
@@ -123,12 +127,43 @@ class App extends Component {
 		this.setState({ list: list, items: items });
 	}
 
+	// sort function - prop = property to sort by - order = asc or des
+	sortFn(prop, order = 'asc') {
+		// copy existing state
+		const items = {...this.state.items};
+		return function(a, b) {
+        	if( order !== 'asc' ) {
+				return items[a][prop] < items[b][prop];
+			}
+			return items[a][prop] > items[b][prop];
+    	}
+	}
+
+	// filter items on list
+	sortItemsOnList(sortBy, order) {
+		// copy existing state
+		const items = {...this.state.items};
+		// copy existing state
+		const list = {...this.state.list};
+		// sorted array ref
+		const sortedList = Object.keys(list).sort(this.sortFn(sortBy, order));
+		// set an object
+		let sortedObj = {};
+		// loop through the listids on list and set up obj data to be returned
+		sortedList.forEach( (itemKey) => {
+			// get quanity for items on list
+			sortedObj[itemKey] = items[itemKey].quantity;
+		});
+		// update list state to use sorted items order
+		this.setState({ list: sortedObj });
+	}
+
 	// once item on list then delete from list and reset quantity to 0
 	removeFromList(key) {
 		// copy existing state
 		const list = {...this.state.list};
 		// copy existing state
-		const items = {...this.state.items}
+		const items = {...this.state.items};
 		// update onOrder property of this item since now removed from list
 		items[key].onOrder = false;
 		// update quantity property of this item
@@ -146,7 +181,7 @@ class App extends Component {
 		// copy existing state
 		const list = {...this.state.list};
 		// copy existing state
-		const items = {...this.state.items}
+		const items = {...this.state.items};
 		// update quantity property of this item
 		items[key].quantity = items[key].quantity + 1;
 		// update number of item ordered from list
@@ -160,7 +195,7 @@ class App extends Component {
 		// copy existing state
 		const list = {...this.state.list};
 		// copy existing state
-		const items = {...this.state.items}
+		const items = {...this.state.items};
 		// update quantity property of this item
 		items[key].quantity = items[key].quantity - 1;
 		// decrease number of item ordered from list
@@ -195,7 +230,7 @@ class App extends Component {
 		// copy existing state
 		let list = {...this.state.list};
 		// copy existing state
-		const items = {...this.state.items}
+		const items = {...this.state.items};
 		// update list state (clear localStorage)
 		list = {};
 		// reset item properties - loop through items based on itemIds provided
@@ -222,6 +257,7 @@ class App extends Component {
 						markItemComplete={this.markItemComplete}
 						markItemIncomplete={this.markItemIncomplete}
 						clearAllItemsFromList={this.clearAllItemsFromList}
+						sortItemsOnList={this.sortItemsOnList}
 					/>
 				</div>
 				<div className="menu">

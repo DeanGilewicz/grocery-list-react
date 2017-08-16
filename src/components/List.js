@@ -43,6 +43,7 @@ class List extends Component {
 			return (
 				<div className="order">
 					<button onClick={ () => {this.props.clearAllItemsFromList(listIds)} }>Clear List</button>
+					<button onClick={ () => {this.props.sortItemsOnList('name', 'dec')} }>Sort Items</button>
 					<ul>
 						{listIds.map(this.renderList)}
 					</ul>
