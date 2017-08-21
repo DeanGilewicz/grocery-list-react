@@ -59,6 +59,7 @@ class List extends Component {
 		} else {
 			return (
 				<div className="order">
+					<button onClick={this.props.populateListFromThreshold}>Populate List</button>
 					<p>--- There are currently no items on your list ---</p>
 				</div>
 			)

@@ -33,6 +33,7 @@ class App extends Component {
 		this.markItemComplete = this.markItemComplete.bind(this);
 		this.markItemIncomplete = this.markItemIncomplete.bind(this);
 		this.clearAllItemsFromList = this.clearAllItemsFromList.bind(this);
+		this.populateListFromThreshold = this.populateListFromThreshold.bind(this);
 
 		// app component
 		this.sortItemsOnList = this.sortItemsOnList.bind(this);
@@ -242,6 +243,37 @@ class App extends Component {
 		// update state for items
 		this.setState({ list: list, items: items });
 	}
+
+	populateListFromThreshold() {
+		// copy existing state
+		const list = {...this.state.list};
+		// copy existing state
+		const items = {...this.state.items};
+
+		// only allow if list is empty
+		if( Object.keys(list).length > 0 && list.constructor === Object )  {
+			return;
+		}
+
+		// get quantity difference of threshold minus stock for each item
+		Object
+			.keys(items)
+			.forEach( (key) => {
+				const quantityDifference = items[key].threshold - items[key].stock;
+				// if difference is not greater than zero then do not add item to list
+				if( quantityDifference <= 0 ) {
+					return;
+				}
+				items[key].onOrder = true;
+				// update quantity property of this item
+				items[key].quantity = quantityDifference;
+				// add new number of item ordered to list
+				list[key] = items[key].quantity;
+			});
+
+		// update states for both list and items
+		this.setState({ list: list, items: items });
+	}
   
 	render() {
 		return (
@@ -258,6 +290,7 @@ class App extends Component {
 						markItemIncomplete={this.markItemIncomplete}
 						clearAllItemsFromList={this.clearAllItemsFromList}
 						sortItemsOnList={this.sortItemsOnList}
+						populateListFromThreshold={this.populateListFromThreshold}
 					/>
 				</div>
 				<div className="menu">
