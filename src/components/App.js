@@ -5,7 +5,7 @@ import List from './List';
 // import Item from './Item';
 
 // mock data
-import sampleItems from '../sample-items';
+// import sampleItems from '../sample-items';
 
 // firebase
 import base from '../base';
@@ -16,7 +16,7 @@ class App extends Component {
 		super();
 
 		// mock data
-		this.loadSampleItems = this.loadSampleItems.bind(this);
+		// this.loadSampleItems = this.loadSampleItems.bind(this);
 
 		// inventory component
 		this.addItem = this.addItem.bind(this);
@@ -73,9 +73,9 @@ class App extends Component {
 	}
 
 	// mock data - items
-	loadSampleItems() {
-		this.setState({ items: sampleItems });
-	}
+	// loadSampleItems() {
+	// 	this.setState({ items: sampleItems });
+	// }
 
 	// add new item
 	addItem(item) {
@@ -281,7 +281,7 @@ class App extends Component {
 				<Header tagline={`${this.props.match.params.groceryListId}`} />
 				<div className="menu">
 					<Inventory
-						loadSampleItems={this.loadSampleItems}
+						// loadSampleItems={this.loadSampleItems}
 						items={this.state.items}
 						addItem={this.addItem}
 						updateItem={this.updateItem}

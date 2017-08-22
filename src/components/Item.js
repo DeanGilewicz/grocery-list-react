@@ -51,7 +51,7 @@ class Item extends Component {
 						<input type="text" name="threshold" value={item.threshold} placeholder="threshold" id="threshold" onChange={ (e) => {this.handleChange(e, key)} } />
 						<div className="item_modal_edit_content_actions">
 							<button className="btn btn_delete" onClick={ () => {this.props.deleteItem(key)} }>Delete</button>
-							<button className="btn btn_complete" onClick={ () => {this.setState({ isEditItem: false })} }>Complete</button>
+							<button className="btn btn_complete" onClick={ () => {this.setState({ isEditItem: false })} }>Done</button>
 						</div>
 					</div>
 				</div>
@@ -89,9 +89,7 @@ class Item extends Component {
 		} else if( !this.state.isViewDetails && this.state.isEditItem ) {
 			return (
 				<div>
-					<h2>Inventory</h2>
 					{this.rendorInventory(this.props.index)}
-					<button onClick={ () => this.setState({ isEditItem: false }) }>Done</button>
 				</div>
 			)
 		}

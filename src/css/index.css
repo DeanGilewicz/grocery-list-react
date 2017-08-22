@@ -30,7 +30,7 @@ h1 {
 }
 
 .list {
-	width: 75%;
+	width: 85%;
 }
 
 .list_headings span {
@@ -41,26 +41,25 @@ h1 {
 }
 
 .menu {
-	width: 25%;
-	/*background-color: #ade6d8;*/
+	width: 15%;
 }
-
-
 
 .items_available {
 	list-style-type: none;
 	display: flex;
 	flex-wrap: wrap;
-	justify-content: space-between;
-	margin: 0;
+	justify-content: space-around;
+	margin: 0.5rem 0 0;
 	padding: 0;
+	overflow-y: scroll;
 }
 
 .items_available li {
-	width: 23%;
-	margin: 10px 0;
+	width: 31%;
+	margin: 0.5rem 1%;
 	padding: 20px;
-	border: 1px solid #ccc;
+	border: 1px solid #adbce6;
+	background-color: #ade6d8;;
 }
 
 .item__image {
@@ -93,13 +92,19 @@ button,
 }
 
 .inventory_modal_add,
-.item_modal_edit {
+.item_modal_edit,
+.items_modal_view {
 	position: fixed;
 	top: 0;
 	left: 0;
 	right: 0;
 	bottom: 0;
 	background: rgba(0,0,0,0.7);
+}
+
+.items_modal_view {
+	padding: 0.5rem;
+	overflow-y: scroll;
 }
 
 .inventory_modal_add_content_container,
@@ -122,7 +127,7 @@ button,
 	width: 100%;
 	max-width: 400px;
 	padding: 1rem 1.4rem;
-	background: #fff;
+	background-color: #ade6d8;;
 }
 
 .inventory_modal_add_content label,
@@ -157,6 +162,11 @@ button,
 .order button,
 .order .button {
 	margin: 0;
+}
+
+.order > button,
+.order > .button {
+	margin: 0.2rem;
 }
 
 .order li {

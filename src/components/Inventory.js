@@ -33,7 +33,7 @@ class Inventory extends Component {
 			return (
 				<div className="inventory">
 					<h2>Inventory</h2>
-					<button onClick={ () => this.setState({ isAddItem: true }) }>Add An Item</button>
+					<button onClick={ () => this.setState({ isAddItem: true }) }>Create Item</button>
 					<button onClick={ () => this.setState({ isViewInventory: true }) }>View Items</button>
 				</div>
 			)
@@ -42,14 +42,13 @@ class Inventory extends Component {
 				<div>
 					<h2>Inventory</h2>
 					<AddGroceryItemForm addItem={this.addItem} cancelAddItem={this.cancelAddItem} />
-					<button onClick={this.props.loadSampleItems}>Load Sample Items</button>
+					{/*<button onClick={this.props.loadSampleItems}>Load Sample Items</button>*/}
 				</div>
 			)			
 		} else if( !this.state.isAddItem && this.state.isViewInventory) {
 			return (
-				<div>
-					<h2>Inventory</h2>
-					<button onClick={ () => this.setState({ isViewInventory: false }) }>Hide Items</button>
+				<div className="items_modal_view">
+					<button onClick={ () => this.setState({ isViewInventory: false }) }>Back To List</button>
 					<ul className="items_available">
 						{
 							Object

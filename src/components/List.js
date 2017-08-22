@@ -41,7 +41,7 @@ class List extends Component {
 			return (
 				<div className="order">
 					<h2>List</h2>
-					<button onClick={ () => {this.props.clearAllItemsFromList(listIds)} }>Clear List</button>
+					<button onClick={ () => {this.props.clearAllItemsFromList(listIds)} }>Reset List</button>
 					<ul>
 						<li className="list_headings">
 							<span>Del</span>
