@@ -22,11 +22,9 @@ class List extends Component {
 				<span>
 					<button onClick={ () => {this.props.removeFromList(key)} }>&times;</button>
 				</span>
-				<span>
-					{decreaseButton}
-					{count}
-					<button disabled={item.isComplete} onClick={ () => {this.props.increaseItemOnList(key)} }>+</button>
-				</span>
+				<span>{decreaseButton}</span>
+				<span>{count}</span>
+				<span><button disabled={item.isComplete} onClick={ () => {this.props.increaseItemOnList(key)} }>+</button></span>
 				<span>{item.name}</span>
 				<span>{item.brand}</span>
 				<span>{item.type}</span>
@@ -42,11 +40,14 @@ class List extends Component {
 		if( typeof listIds !== 'undefined' && listIds.length > 0 ) {
 			return (
 				<div className="order">
+					<h2>List</h2>
 					<button onClick={ () => {this.props.clearAllItemsFromList(listIds)} }>Clear List</button>
 					<ul>
-						<li>
+						<li className="list_headings">
 							<span>Del</span>
+							<span></span>
 							<span>Qty</span>
+							<span></span>
 							<span onClick={ () => {this.props.sortItemsOnList('name', 'dec')} }>Name ></span>
 							<span>Brand</span>
 							<span onClick={ () => {this.props.sortItemsOnList('type')} }>Type ></span>
@@ -59,6 +60,7 @@ class List extends Component {
 		} else {
 			return (
 				<div className="order">
+					<h2>List</h2>
 					<button onClick={this.props.populateListFromThreshold}>Populate List</button>
 					<p>--- There are currently no items on your list ---</p>
 				</div>

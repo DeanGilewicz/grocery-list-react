@@ -279,6 +279,16 @@ class App extends Component {
 		return (
 			<div className="app">
 				<Header tagline={`${this.props.match.params.groceryListId}`} />
+				<div className="menu">
+					<Inventory
+						loadSampleItems={this.loadSampleItems}
+						items={this.state.items}
+						addItem={this.addItem}
+						updateItem={this.updateItem}
+						deleteItem={this.deleteItem}
+						addToList={this.addToList}
+					/>
+				</div>
 				<div className="list">
 					<List 
 						items={this.state.items}
@@ -292,29 +302,6 @@ class App extends Component {
 						sortItemsOnList={this.sortItemsOnList}
 						populateListFromThreshold={this.populateListFromThreshold}
 					/>
-				</div>
-				<div className="menu">
-					<Inventory
-						loadSampleItems={this.loadSampleItems}
-						items={this.state.items}
-						addItem={this.addItem}
-						updateItem={this.updateItem}
-						deleteItem={this.deleteItem}
-						addToList={this.addToList}
-					/>
-					{/*<ul className="items_available">
-						{
-							Object
-								.keys(this.state.items)
-								.map(key => 
-									<Item key={key}
-										index={key}
-										details={this.state.items[key]}
-										addToList={this.addToList}
-									/>
-								)
-						}
-					</ul>*/}
 				</div>
 			</div>
 		);
