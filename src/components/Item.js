@@ -47,6 +47,8 @@ class Item extends Component {
 						<textarea name="description" value={item.description} placeholder="description" id="description" onChange={ (e) => {this.handleChange(e, key)} }></textarea>
 						<label htmlFor="image">Image:</label>
 						<input type="text" name="image" value={item.image} placeholder="image" id="image" onChange={ (e) => {this.handleChange(e, key)} } />
+						<label htmlFor="stock">Stock:</label>
+						<input type="text" name="stock" value={item.stock} placeholder="stock" id="stock" onChange={ (e) => {this.handleChange(e, key)} } />
 						<label htmlFor="threshold">Threshold:</label>
 						<input type="text" name="threshold" value={item.threshold} placeholder="threshold" id="threshold" onChange={ (e) => {this.handleChange(e, key)} } />
 						<div className="item_modal_edit_content_actions">

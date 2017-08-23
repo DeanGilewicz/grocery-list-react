@@ -5,6 +5,24 @@ class List extends Component {
 	constructor() {
 		super();
 		this.renderList = this.renderList.bind(this);
+		this.sortItemsOnList = this.sortItemsOnList.bind(this);
+
+		this.state = {
+			sortByName: false,
+			sortByType: false
+		};
+	}
+
+	sortItemsOnList(sortBy, order) {
+		const mapObj = {
+			name: 'sortByName',
+			type: 'sortByType'
+		};
+		const stateValue = mapObj[sortBy];
+		// update state so can identity sort
+		this.setState({ [stateValue]: true });
+		// update global state
+		this.props.sortItemsOnList(sortBy, order);
 	}
 
 	renderList(key) {
@@ -37,6 +55,8 @@ class List extends Component {
 
 	render () {
 		const listIds = Object.keys(this.props.list);
+		const sortByName = (this.state.sortByName) ? 'sorted' : '';
+		const sortByType = (this.state.sortByType) ? 'sorted' : '';
 		if( typeof listIds !== 'undefined' && listIds.length > 0 ) {
 			return (
 				<div className="order">
@@ -48,9 +68,9 @@ class List extends Component {
 							<span></span>
 							<span>Qty</span>
 							<span></span>
-							<span onClick={ () => {this.props.sortItemsOnList('name', 'dec')} }>Name ></span>
+							<span className={`sortBy ${sortByName}`} onClick={ () => {this.sortItemsOnList('name', 'dec')} }>Name</span>
 							<span>Brand</span>
-							<span onClick={ () => {this.props.sortItemsOnList('type')} }>Type ></span>
+							<span className={`sortBy ${sortByType}`} onClick={ () => {this.sortItemsOnList('type')} }>Type</span>
 							<span>Status</span>
 						</li>
 						{listIds.map(this.renderList)}
