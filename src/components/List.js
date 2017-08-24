@@ -36,7 +36,7 @@ class List extends Component {
 		const statusButton = (item.isComplete) ? <button onClick={ () => {this.props.markItemIncomplete(key)} }>Incomplete</button> : <button onClick={ () => {this.props.markItemComplete(key)} }>Complete</button>;
 
 		return (
-			<li key={key}>
+			<li key={key} className={(item.isComplete) ? 'complete' : ''}>
 				<span>
 					<button onClick={ () => {this.props.removeFromList(key)} }>&times;</button>
 				</span>

@@ -260,6 +260,20 @@ button,
 
 .order li {
 	padding: 0.3rem 0.5rem;
+	transition: background-color 0.4s ease;
+}
+
+.order li.complete {
+	background-color: #ade6d8 !important;
+}
+
+.order li.complete span {
+	transition: opacity 0.4s ease;
+}
+
+.order li.complete span:nth-child(2),
+.order li.complete span:nth-child(4) {
+	opacity: 0.3;
 }
 
 @media (min-width: 768px) {

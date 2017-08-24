@@ -209,7 +209,7 @@ class App extends Component {
 		// copy existing state
 		const items = {...this.state.items};
 		// add quantity to current stock
-		items[key].stock += items[key].quantity;
+		items[key].stock = parseInt(items[key].stock, 10) + items[key].quantity;
 		// update isComplete Property
 		items[key].isComplete = true;
 		// update state for items
@@ -220,7 +220,7 @@ class App extends Component {
 		// copy existing state
 		const items = {...this.state.items};
 		// remove quantity from current stock
-		items[key].stock -= items[key].quantity;
+		items[key].stock = parseInt(items[key].stock, 10) - items[key].quantity;
 		// update isComplete Property
 		items[key].isComplete = false;
 		// update state for items
