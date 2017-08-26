@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 class Login extends Component {
 
@@ -32,5 +33,9 @@ class Login extends Component {
 		)
 	}
 }
+
+Login.proptypes = {
+	history: PropTypes.object.isRequired
+};
 
 export default Login;

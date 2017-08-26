@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 class List extends Component {
 
@@ -89,5 +90,18 @@ class List extends Component {
 	}
 
 }
+
+List.proptypes = {
+	items: PropTypes.object.isRequired,
+	list: PropTypes.object.isRequired,
+	sortItemsOnList: PropTypes.func.isRequired,
+	decreaseItemOnList: PropTypes.func.isRequired,
+	markItemIncomplete: PropTypes.func.isRequired,
+	markItemComplete: PropTypes.func.isRequired,
+	removeFromList: PropTypes.func.isRequired,
+	increaseItemOnList: PropTypes.func.isRequired,
+	clearAllItemsFromList: PropTypes.func.isRequired,
+	populateListFromThreshold: PropTypes.func.isRequired
+};
 
 export default List;

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 class AddGroceryItemForm extends Component {
 
@@ -56,5 +57,10 @@ class AddGroceryItemForm extends Component {
 		)
 	}
 }
+
+AddGroceryItemForm.propTypes = {
+	addItem: PropTypes.func.isRequired,
+	cancelAddItem: PropTypes.func.isRequired
+};
 
 export default AddGroceryItemForm;

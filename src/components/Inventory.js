@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import AddGroceryItemForm from './AddGroceryItemForm';
 import Item from './Item';
 
@@ -71,5 +72,13 @@ class Inventory extends Component {
 	}
 
 }
+
+Inventory.proptypes = {
+	items: PropTypes.object.isRequired,
+	addItem: PropTypes.func.isRequired,
+	addToList: PropTypes.func.isRequired,
+	updateItem: PropTypes.func.isRequired,
+	deleteItem: PropTypes.func.isRequired
+};
 
 export default Inventory;

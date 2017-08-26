@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 const Header = (props) => {
 	return (
@@ -9,3 +10,7 @@ const Header = (props) => {
 }
 
 export default Header;
+
+Header.propTypes = {
+	tagline: PropTypes.string.isRequired
+};

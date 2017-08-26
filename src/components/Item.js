@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 class Item extends Component {
 
@@ -98,5 +99,14 @@ class Item extends Component {
 
 	}
 }
+
+Item.proptypes = {
+	items: PropTypes.object.isRequired,
+	updateItem: PropTypes.func.isRequired,
+	deleteItem: PropTypes.func.isRequired,
+	details: PropTypes.object.isRequired,
+	index: PropTypes.string.isRequired,
+	addToList: PropTypes.func.isRequired
+};
 
 export default Item;
