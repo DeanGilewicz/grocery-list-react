@@ -1,34 +1,177 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import firebase from 'firebase';
+import base from '../base';
 
 class Login extends Component {
 
-	goToList(e) {
-		e.preventDefault();
-		let groceryListName = this.groceryListNameInput.value;
+	constructor() {
+		super();
+
+		this.authenticate = this.authenticate.bind(this);
+		this.renderLogin = this.renderLogin.bind(this);
+		this.createGroceryList = this.createGroceryList.bind(this);
+
+		this.state = {
+			uid: null,
+			groceryListUrls: null
+		}
+
+	}
+
+	goToList(groceryListKey) {
+		const groceryListUrl = this.state.groceryListUrls[groceryListKey];
 		// go to the associated grocery list
-		this.props.history.push(`/grocerylist/${groceryListName}`);
+		this.props.history.push(`/grocerylist/${groceryListUrl}`);
+	}
+
+	authenticate() {
+
+		const provider = new firebase.auth.GithubAuthProvider();
+
+		base.app.auth().signInWithPopup(provider).then(result => {
+			
+			// console.log('result',result);
+			let userId = result.user.uid;
+
+			base.base.fetch('/', {
+				context: this,
+				asArray: true
+			}).then(groceryLists => {
+				// console.log(groceryLists);
+				let userGroceryLists = groceryLists.map(groceryList => {
+					// if logged in user id matches grocery list owner id then return the grocery list url
+					if( groceryList.owner === userId ) {
+						return groceryList.key;
+					}
+				});
+				// console.log('userGroceryLists',userGroceryLists);
+				// set state -> user id and users grocery lists
+				this.setState({
+					uid: userId,
+					groceryListUrls: userGroceryLists
+				});
+
+			}).catch(error => {
+				//handle error
+				console.error(error);
+				return;
+			});
+
+		}).catch(error => {
+			console.error(error);
+			return;
+		});
+	
+	}
+
+	createGroceryList(e) {
+		e.preventDefault();
+
+		let newGroceryListName = this.groceryListNameInput.value;
+	
+		// query firebase db to get all grocery lists
+		base.base.fetch('/', {
+			context: this,
+			asArray: true
+		}).then(groceryLists => {
+			// console.log(groceryLists);
+			let nameExists = groceryLists.find(groceryList => {
+				//  return grocery list in db that has the name that user entered
+				return groceryList.key === newGroceryListName;
+			});
+
+			// handle if name already exists
+			if( nameExists ) { return; }
+
+			// add grocery list record in db and add owner to that record 
+			base.base.post(`/${newGroceryListName}`, {
+				data: {owner: this.state.uid}
+			}).then(() => {
+				// copy existing state grocery list url obj
+				const groceryListUrls = [...this.state.groceryListUrls];
+				// add new grocery list url to state
+				groceryListUrls.push(newGroceryListName);
+				// update state to include this record
+				this.setState({ groceryListUrls: groceryListUrls });
+
+			}).catch(error => {
+				// handle error
+				console.error(error);
+				return;
+			});
+
+		}).catch(error => {
+			// handle error
+			console.error(error);
+			return;
+		});
+
+	}
+	
+	renderLogin() {
+		return (
+			<nav>
+				<h2>Sign In</h2>
+				<p>Log in to manage your grocery lists</p>
+				<button className="github" onClick={this.authenticate}>Login with GitHub</button>
+			</nav>
+		)
 	}
 
 	render() {
+		const logOut = <button>Log Out</button>;
+
+		// check if user not logged in at all
+		if( !this.state.uid ) {
+			return <div>{this.renderLogin()}</div>
+		}
+
+		// check if any grocery lists created by logged in user
+		if( this.state.uid && !this.state.groceryListUrls ) {
+			return (
+				<div>
+					<p>You haven't created a grocery list yet. Create one now!</p>
+
+					<form action="" method="POST" onSubmit={ (e) => {this.createGroceryList(e)} }>
+						<label>Grocery List Name</label>
+						<input type="text" name="groceryListName" ref={ (input) => {this.groceryListNameInput = input} } />
+						<button type="submit">Go</button>
+					</form>
+
+					{logOut}
+				</div>
+			)
+		}
+
 		return (
+
 			<div className="login">
+
 				{/*<form action="" method="POST" onSubmit={this.goToList.bind(this)}>*/}
-				<form action="" method="POST" onSubmit={ (e) => {this.goToList(e)} }>
+				
+				<p>Go to one of your already created grocery lists</p>
+
+				{
+					Object
+						.keys(this.state.groceryListUrls)
+						.map((key) => {
+							return (
+								<p key={key} onClick={ () => {this.goToList(key)} }>{this.state.groceryListUrls[key]}</p>
+							)
+						})
+				}
+
+				<p>Create a new grocery list:</p>
+
+				<form action="" method="POST" onSubmit={ (e) => {this.createGroceryList(e)} }>
 					<label>Grocery List Name</label>
 					<input type="text" name="groceryListName" ref={ (input) => {this.groceryListNameInput = input} } />
 					<button type="submit">Go</button>
 				</form>
 
-				{/*
-					<form action="" method="POST" onSubmit={}>
-						<label>Name</label>
-						<input type="text" name="name" ref={} />
-						<label>Password</label>
-						<input type="password" name="password" ref={} />
-						<button type="submit">Go</button>
-					</form>
-				*/}
+				{logOut}
+
 			</div>
 		)
 	}

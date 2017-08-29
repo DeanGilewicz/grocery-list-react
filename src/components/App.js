@@ -49,7 +49,7 @@ class App extends Component {
 	}
 
 	componentWillMount() {
-		this.refItems = base.syncState(`${this.props.match.params.groceryListId}/items`, {
+		this.refItems = base.base.syncState(`${this.props.match.params.groceryListId}/items`, {
 			context: this,
 			state: 'items' 
 		});
@@ -66,7 +66,7 @@ class App extends Component {
 	}
 
 	componentWillUnmount() {
-		base.removeBinding(this.refItems);
+		base.base.removeBinding(this.refItems);
 	}
 
 	componentWillUpdate(nextProps, nextState) {
