@@ -12,6 +12,7 @@ class Login extends Component {
 		this.renderLogin = this.renderLogin.bind(this);
 		this.createGroceryList = this.createGroceryList.bind(this);
 		this.setUpLoggedInUser = this.setUpLoggedInUser.bind(this);
+		this.logOut = this.logOut.bind(this);
 
 		this.state = {
 			uid: null,
@@ -22,7 +23,7 @@ class Login extends Component {
 
 	componentDidMount() {
 		base.app.auth().onAuthStateChanged((user, error) => {
-		  this.setUpLoggedInUser(user.uid);
+		  if(user) { this.setUpLoggedInUser(user.uid); }
 		});
 	}
 
@@ -73,6 +74,16 @@ class Login extends Component {
 			//handle error
 			console.error(error);
 			return;
+		});
+	}
+
+	logOut() {
+		base.app.auth().signOut().then(() => {
+			// return value is null
+			this.setState({
+				uid: null,
+				groceryListUrls: null
+			});
 		});
 	}
 
@@ -133,7 +144,7 @@ class Login extends Component {
 	}
 
 	render() {
-		const logOut = <button>Log Out</button>;
+		const logOut = <button onClick={this.logOut}>Log Out</button>;
 
 		// check if user not logged in at all
 		if( !this.state.uid ) {
