@@ -40,6 +40,13 @@ button,
 	cursor: pointer;
 }
 
+.login {
+	max-width: 62.5rem;
+	margin: 0 auto;
+	padding-left: 0.9375rem;
+	padding-right: 0.9375rem;
+}
+
 .app {
 	display: flex;
 	flex-wrap: wrap;

@@ -11,12 +11,19 @@ class Login extends Component {
 		this.authenticate = this.authenticate.bind(this);
 		this.renderLogin = this.renderLogin.bind(this);
 		this.createGroceryList = this.createGroceryList.bind(this);
+		this.setUpLoggedInUser = this.setUpLoggedInUser.bind(this);
 
 		this.state = {
 			uid: null,
 			groceryListUrls: null
 		}
 
+	}
+
+	componentDidMount() {
+		base.app.auth().onAuthStateChanged((user, error) => {
+		  this.setUpLoggedInUser(user.uid);
+		});
 	}
 
 	goToList(groceryListKey) {
@@ -34,35 +41,39 @@ class Login extends Component {
 			// console.log('result',result);
 			let userId = result.user.uid;
 
-			base.base.fetch('/', {
-				context: this,
-				asArray: true
-			}).then(groceryLists => {
-				// console.log(groceryLists);
-				let userGroceryLists = groceryLists.map(groceryList => {
-					// if logged in user id matches grocery list owner id then return the grocery list url
-					if( groceryList.owner === userId ) {
-						return groceryList.key;
-					}
-				});
-				// console.log('userGroceryLists',userGroceryLists);
-				// set state -> user id and users grocery lists
-				this.setState({
-					uid: userId,
-					groceryListUrls: userGroceryLists
-				});
-
-			}).catch(error => {
-				//handle error
-				console.error(error);
-				return;
-			});
+			this.setUpLoggedInUser(userId);
 
 		}).catch(error => {
 			console.error(error);
 			return;
 		});
 	
+	}
+
+	setUpLoggedInUser(userId) {
+		return base.base.fetch('/', {
+			context: this,
+			asArray: true
+		}).then(groceryLists => {
+			// console.log(groceryLists);
+			let userGroceryLists = groceryLists.map(groceryList => {
+				// if logged in user id matches grocery list owner id then return the grocery list url
+				if( groceryList.owner === userId ) {
+					return groceryList.key;
+				}
+			});
+			// console.log('userGroceryLists',userGroceryLists);
+			// set state -> user id and users grocery lists
+			this.setState({
+				uid: userId,
+				groceryListUrls: userGroceryLists
+			});
+
+		}).catch(error => {
+			//handle error
+			console.error(error);
+			return;
+		});
 	}
 
 	createGroceryList(e) {
@@ -111,11 +122,13 @@ class Login extends Component {
 	
 	renderLogin() {
 		return (
-			<nav>
-				<h2>Sign In</h2>
-				<p>Log in to manage your grocery lists</p>
-				<button className="github" onClick={this.authenticate}>Login with GitHub</button>
-			</nav>
+			<div className="login">
+				<nav>
+					<h2>Sign In</h2>
+					<p>Log in to manage your grocery lists</p>
+					<button className="github" onClick={this.authenticate}>Login with GitHub</button>
+				</nav>
+			</div>
 		)
 	}
 
@@ -130,7 +143,7 @@ class Login extends Component {
 		// check if any grocery lists created by logged in user
 		if( this.state.uid && !this.state.groceryListUrls ) {
 			return (
-				<div>
+				<div className="login">
 					<p>You haven't created a grocery list yet. Create one now!</p>
 
 					<form action="" method="POST" onSubmit={ (e) => {this.createGroceryList(e)} }>
