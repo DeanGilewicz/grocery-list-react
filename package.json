@@ -2,8 +2,9 @@
   "name": "grocery-list",
   "version": "0.1.0",
   "private": true,
-  "homepage" : "http://DeanGilewicz.github.io/grocery-list-react",
+  "homepage": "http://DeanGilewicz.github.io/grocery-list-react",
   "dependencies": {
+    "gh-pages": "^1.0.0",
     "prop-types": "^15.5.10",
     "re-base": "^3.0.3",
     "react": "^15.6.1",
