@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types';
 import Header from './Header';
 import Inventory from './Inventory';
@@ -296,6 +297,7 @@ class App extends Component {
 	render() {
 		return (
 			<div className="app">
+				<Link to='/' className="button">Home</Link>
 				<Header tagline={`${this.props.match.params.groceryListId}`} />
 				<div className="menu">
 					<Inventory
