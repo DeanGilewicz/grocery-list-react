@@ -38,8 +38,7 @@ class Login extends Component {
 		const provider = new firebase.auth.GithubAuthProvider();
 
 		base.app.auth().signInWithPopup(provider).then(result => {
-			
-			// console.log('result',result);
+
 			let userId = result.user.uid;
 
 			this.setUpLoggedInUser(userId);
@@ -56,19 +55,22 @@ class Login extends Component {
 			context: this,
 			asArray: true
 		}).then(groceryLists => {
-			// console.log(groceryLists);
+
 			let userGroceryLists = groceryLists.map(groceryList => {
 				// if logged in user id matches grocery list owner id then return the grocery list url
 				if( groceryList.owner === userId ) {
 					return groceryList.key;
 				}
 			});
-			// console.log('userGroceryLists',userGroceryLists);
+
 			// set state -> user id and users grocery lists
 			this.setState({
 				uid: userId,
 				groceryListUrls: userGroceryLists
 			});
+
+			// set key on session storage to use in App route since not assoicated by parent component
+			return sessionStorage.setItem('userId', userId);
 
 		}).catch(error => {
 			//handle error
@@ -84,6 +86,9 @@ class Login extends Component {
 				uid: null,
 				groceryListUrls: null
 			});
+
+			// clear key on session storage
+			return sessionStorage.removeItem('userId');
 		});
 	}
 
@@ -97,7 +102,6 @@ class Login extends Component {
 			context: this,
 			asArray: true
 		}).then(groceryLists => {
-			// console.log(groceryLists);
 			let nameExists = groceryLists.find(groceryList => {
 				//  return grocery list in db that has the name that user entered
 				return groceryList.key === newGroceryListName;

@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import Header from './Header';
 import Inventory from './Inventory';
 import List from './List';
-// import Item from './Item';
 
 // mock data
 // import sampleItems from '../sample-items';
@@ -49,20 +48,38 @@ class App extends Component {
 	}
 
 	componentWillMount() {
-		this.refItems = base.base.syncState(`${this.props.match.params.groceryListId}/items`, {
-			context: this,
-			state: 'items' 
-		});
+		const userId = sessionStorage.getItem('userId');
 
-		// check if there is any list in localStorage
-    	const localStorageRef = JSON.parse(localStorage.getItem(`list-${this.props.match.params.groceryListId}`));
-
-		if( localStorageRef ) {
-			// update our App component's list state
-			this.setState({
-				list: localStorageRef
-			});
+		// no user id then kick out to login screen
+		if( !userId ) {
+			return this.props.history.push('/');
 		}
+		
+		// logged in user is not owner of this grocery list then kick out to login screen
+		base.base.fetch(this.props.match.params.groceryListId, {
+    		context: this,
+    		then(groceryListRecord) {
+    			if( groceryListRecord.owner !== userId) {
+    				return this.props.history.push('/');
+    			}
+
+				this.refItems = base.base.syncState(`${this.props.match.params.groceryListId}/items`, {
+					context: this,
+					state: 'items' 
+				});
+
+				// check if there is any list in localStorage
+		    	const localStorageRef = JSON.parse(localStorage.getItem(`list-${this.props.match.params.groceryListId}`));
+
+				if( localStorageRef ) {
+					// update our App component's list state
+					this.setState({
+						list: localStorageRef
+					});
+				}
+
+			}
+		});
 	}
 
 	componentWillUnmount() {
