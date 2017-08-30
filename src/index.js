@@ -10,9 +10,12 @@ import App from './components/App';
 import NotFound from './components/NotFound';
 // import registerServiceWorker from './registerServiceWorker';
 
+// github pages only
+const repo = `/${window.location.pathname.split('/')[1]}`;
+
 const Root = () => {
 	return (
-		<BrowserRouter>
+		<BrowserRouter basename={repo}>
 			<div>
 				<Switch>
 					<Route 
