@@ -140,7 +140,7 @@ class Login extends Component {
 			<div className="login">
 				<nav>
 					<h2>Sign In</h2>
-					<p>Log in to manage your grocery lists</p>
+					<p>Log in here to manage your grocery lists:</p>
 					<button className="github" onClick={this.authenticate}>Login with GitHub</button>
 				</nav>
 			</div>
@@ -159,15 +159,16 @@ class Login extends Component {
 		if( this.state.uid && !this.state.groceryListUrls ) {
 			return (
 				<div className="login">
+					{logOut}
+
 					<p>You haven't created a grocery list yet. Create one now!</p>
 
-					<form action="" method="POST" onSubmit={ (e) => {this.createGroceryList(e)} }>
-						<label>Grocery List Name</label>
-						<input type="text" name="groceryListName" ref={ (input) => {this.groceryListNameInput = input} } />
+					<form action="" method="POST" className="login_form" onSubmit={ (e) => {this.createGroceryList(e)} }>
+						<label htmlFor="name">Name</label>
+						<input type="text" name="groceryListName" id="name" ref={ (input) => {this.groceryListNameInput = input} } />
 						<button type="submit">Go</button>
 					</form>
-
-					{logOut}
+					
 				</div>
 			)
 		}
@@ -178,27 +179,27 @@ class Login extends Component {
 
 				{/*<form action="" method="POST" onSubmit={this.goToList.bind(this)}>*/}
 				
-				<p>Go to one of your already created grocery lists</p>
+				{logOut}
+
+				<p>Go to one of your already created grocery lists:</p>
 
 				{
 					Object
 						.keys(this.state.groceryListUrls)
 						.map((key) => {
 							return (
-								<p key={key} onClick={ () => {this.goToList(key)} }>{this.state.groceryListUrls[key]}</p>
+								<button key={key} className="button" onClick={ () => {this.goToList(key)} }>{this.state.groceryListUrls[key]}</button>
 							)
 						})
 				}
 
 				<p>Create a new grocery list:</p>
 
-				<form action="" method="POST" onSubmit={ (e) => {this.createGroceryList(e)} }>
-					<label>Grocery List Name</label>
-					<input type="text" name="groceryListName" ref={ (input) => {this.groceryListNameInput = input} } />
+				<form action="" method="POST" className="login_form" onSubmit={ (e) => {this.createGroceryList(e)} }>
+					<label htmlFor="name">Name</label>
+					<input type="text" name="groceryListName" id="name" ref={ (input) => {this.groceryListNameInput = input} } />
 					<button type="submit">Go</button>
 				</form>
-
-				{logOut}
 
 			</div>
 		)

@@ -44,8 +44,16 @@ button,
 .login {
 	max-width: 62.5rem;
 	margin: 0 auto;
-	padding-left: 0.9375rem;
-	padding-right: 0.9375rem;
+	padding: 1rem 0.9375rem;
+}
+
+.login p {
+	margin-top: 40px;
+}
+
+.login_form label {
+	margin-right: 10px;
+	font-size: 14px;
 }
 
 .app {
@@ -53,8 +61,7 @@ button,
 	flex-wrap: wrap;
 	max-width: 62.5rem;
 	margin: 0 auto;
-	padding-left: 0.9375rem;
-	padding-right: 0.9375rem;
+	padding: 1rem 0.9375rem;
 }
 
 .list {
