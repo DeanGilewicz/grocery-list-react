@@ -10,15 +10,9 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-console.log("auth", auth);
 const base = getDatabase(app);
-console.log("base", base);
 const provider = new GithubAuthProvider();
-console.log("provider", provider);
 
-export default {
-	app,
-	auth,
-	base,
-	provider,
-};
+const exports = { app, auth, base, provider };
+
+export default exports;

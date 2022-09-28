@@ -1,5 +1,30 @@
 # Grocery List
 
+TODO:
+
+- sync up `update()`
+  - item in app.js
+- refactor app - use context for firebase CUD methods?
+
+---
+
+- use React class
+- handle errors with context
+
+- "list" is local only - is not persisted
+- "items" are persisted in Firebase
+- items are created (inventory) and stock and threshold set
+- populate list creates the list based on item's stock and threshold difference
+- user can manually add any item to the list (if not added already will not show in overlay)
+- localStorage used to keep track of the "list"
+- sessionStorage used so no need to continually auth in in the same session (stores user id)
+
+onOrder = true ... currently on list and ordered at store
+onOrder = false ... not on list (should add an ordered all button / checkout to note we ordered a single item from list)
+
+isComplete = true ... currently on list, ordered at store AND received
+\*\* we update stock when it's complete based on the quantity ordered from list
+
 In the project directory, you can run:
 
 ```sh

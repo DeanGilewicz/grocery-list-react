@@ -53,7 +53,7 @@ class List extends Component {
 					this.props.markItemIncomplete(key);
 				}}
 			>
-				Incomplete
+				Complete
 			</button>
 		) : (
 			<button
@@ -61,7 +61,7 @@ class List extends Component {
 					this.props.markItemComplete(key);
 				}}
 			>
-				Complete
+				Incomplete
 			</button>
 		);
 

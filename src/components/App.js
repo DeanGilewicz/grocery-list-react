@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { ref } from "firebase/database";
+import { child, get, onValue, ref, set, update } from "firebase/database";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import Header from "./Header";
@@ -11,8 +11,11 @@ import List from "./List";
 
 // firebase
 import base from "../base";
+import { ErrorContext } from "../ErrorContext";
 
 class App extends Component {
+	static contextType = ErrorContext;
+
 	constructor() {
 		super();
 
@@ -42,12 +45,13 @@ class App extends Component {
 
 		// initial state
 		this.state = {
+			errors: [],
 			items: {},
 			list: {},
 		};
 	}
 
-	componentWillMount() {
+	componentDidMount() {
 		const userId = sessionStorage.getItem("userId");
 
 		// no user id then kick out to login screen
@@ -55,42 +59,35 @@ class App extends Component {
 			return this.props.history.push("/");
 		}
 
+		const itemsParentName = this.props.match.params.groceryListId;
+
 		// logged in user is not owner of this grocery list then kick out to login screen
-		ref(base.base, this.props.match.params.groceryListId, {
-			context: this,
-			then(groceryListRecord) {
-				if (groceryListRecord.owner !== userId) {
-					return this.props.history.push("/");
-				}
+		const dbRef = ref(base.base, itemsParentName);
+		onValue(dbRef, (snapshot) => {
+			const itemsParent = snapshot.val();
 
-				this.refItems = base.base.syncState(
-					`${this.props.match.params.groceryListId}/items`,
-					{
-						context: this,
-						state: "items",
-					}
-				);
+			if (itemsParent.owner !== userId) {
+				return this.props.history.push("/");
+			}
 
-				// check if there is any list in localStorage
-				const localStorageRef = JSON.parse(
-					localStorage.getItem(`list-${this.props.match.params.groceryListId}`)
-				);
+			this.setState({
+				items: itemsParent.items,
+			});
+			// check if there is any list in localStorage
+			const localStorageRef = JSON.parse(
+				localStorage.getItem(`list-${this.props.match.params.groceryListId}`)
+			);
 
-				if (localStorageRef) {
-					// update our App component's list state
-					this.setState({
-						list: localStorageRef,
-					});
-				}
-			},
+			if (localStorageRef) {
+				// update our App component's list state
+				this.setState({
+					list: localStorageRef,
+				});
+			}
 		});
 	}
 
-	componentWillUnmount() {
-		base.base.removeBinding(this.refItems);
-	}
-
-	componentWillUpdate(nextProps, nextState) {
+	componentDidUpdate(nextProps, nextState) {
 		localStorage.setItem(
 			`list-${this.props.match.params.groceryListId}`,
 			JSON.stringify(nextState.list)
@@ -102,15 +99,51 @@ class App extends Component {
 	// 	this.setState({ items: sampleItems });
 	// }
 
-	// add new item
+	// add new item using name as unique identifier
 	addItem(item) {
-		// copy existing state
-		const items = { ...this.state.items };
-		// update item
-		const timestamp = Date.now();
-		items[`item-${timestamp}`] = item;
-		// set state
-		this.setState({ items: items });
+		const context = this.context;
+
+		if (!validateItem(item)) {
+			return context.setError("add-item", "Required fields missing!");
+		}
+
+		const itemsParentName = this.props.match.params.groceryListId;
+
+		// query DB to determine if item name is in use
+		const dbRef = ref(base.base);
+		get(
+			child(
+				dbRef,
+				`${itemsParentName.toLowerCase()}/${item.name.toLowerCase()}`
+			)
+		)
+			.then((snapshot) => {
+				if (snapshot.exists()) {
+					context.setError(
+						"create-item",
+						"Unable to create item as name is already in use!"
+					);
+					return;
+				}
+				// ok to create since item name isn't in use
+				const itemKey = item.name.trim().replaceAll(" ", "-").toLowerCase();
+				set(ref(base.base, `${itemsParentName}/items/${itemKey}`), {
+					...item,
+				}).catch((err) => {
+					console.error("create-item set error", err);
+					context.setError(
+						"create-item",
+						"Oh no. Unable to create item as something went wrong!"
+					);
+				});
+			})
+			.catch((error) => {
+				console.error("create-item get error", error);
+				context.setError(
+					"create-item",
+					"Oh no. Unable to create item as something went wrong!"
+				);
+			});
 	}
 
 	// update an existing item
@@ -118,6 +151,17 @@ class App extends Component {
 		const items = { ...this.state.items };
 		items[key] = updatedItem;
 		this.setState({ items: items });
+		// TODO: this works but refactor
+		// update(ref(base.base, `demo/items/${key}`), {
+		// 	...updatedItem,
+		// 	threshold: 10,
+		// }).catch((err) => {
+		// 	console.error("create-item set error", err);
+		// 	// context.setError(
+		// 	// 	"create-item",
+		// 	// 	"Oh no. Unable to create item as something went wrong!"
+		// 	// );
+		// });
 	}
 
 	// delete an item
@@ -144,7 +188,7 @@ class App extends Component {
 		// copy existing state
 		const items = { ...this.state.items };
 		// update onOrder property of this item since now on list
-		items[key].onOrder = true;
+		items[key].onOrder = false;
 		// update quantity property of this item
 		items[key].quantity = items[key].quantity = 1;
 		// add new number of item ordered to list
@@ -177,7 +221,7 @@ class App extends Component {
 		let sortedObj = {};
 		// loop through the listids on list and set up obj data to be returned
 		sortedList.forEach((itemKey) => {
-			// get quanity for items on list
+			// get quantity for items on list
 			sortedObj[itemKey] = items[itemKey].quantity;
 		});
 		// update list state to use sorted items order
@@ -257,7 +301,7 @@ class App extends Component {
 		let list = { ...this.state.list };
 		// copy existing state
 		const items = { ...this.state.items };
-		// update list state (clear localStorage)
+		// update list state
 		list = {};
 		// reset item properties - loop through items based on itemIds provided
 		itemIds.forEach((itemId) => {
@@ -287,7 +331,7 @@ class App extends Component {
 			if (quantityDifference <= 0) {
 				return;
 			}
-			items[key].onOrder = true;
+			items[key].onOrder = false;
 			// update quantity property of this item
 			items[key].quantity = quantityDifference;
 			// add new number of item ordered to list
@@ -332,6 +376,16 @@ class App extends Component {
 			</div>
 		);
 	}
+}
+
+function validateItem(item) {
+	let isValidated = true;
+	if (!item.brand) isValidated = false;
+	if (!item.name) isValidated = false;
+	if (!item.stock) isValidated = false;
+	if (!item.threshold) isValidated = false;
+	if (!item.type) isValidated = false;
+	return isValidated;
 }
 
 App.propTypes = {

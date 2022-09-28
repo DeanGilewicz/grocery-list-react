@@ -1,9 +1,17 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
+import { ErrorContext } from "../ErrorContext";
 
 class AddGroceryItemForm extends Component {
+	// class based useContext()
+	static contextType = ErrorContext;
+
 	createItem(e) {
 		e.preventDefault();
+
+		// remove all create-list errors
+		this.context.resetErrorsByType("add-item");
+
 		const item = {
 			name: this.name.value,
 			brand: this.brand.value,
@@ -111,7 +119,11 @@ class AddGroceryItemForm extends Component {
 							<button
 								type="button"
 								className="btn btn_cancel"
-								onClick={this.props.cancelAddItem}
+								onClick={() => {
+									// remove all create-list errors
+									this.context.resetErrorsByType("add-item");
+									this.props.cancelAddItem();
+								}}
 							>
 								Cancel
 							</button>
@@ -119,6 +131,15 @@ class AddGroceryItemForm extends Component {
 								Save
 							</button>
 						</div>
+						{this.context.getErrorsByType("add-item").length > 0 && (
+							<ul>
+								{this.context
+									.getErrorsByType("add-item")
+									.map(({ msg, type }) => (
+										<li key={`${type}-${msg}`}>{msg}</li>
+									))}
+							</ul>
+						)}
 					</div>
 				</div>
 			</form>

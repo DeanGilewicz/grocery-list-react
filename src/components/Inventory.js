@@ -17,7 +17,7 @@ class Inventory extends Component {
 	}
 
 	addItem(item) {
-		// delete item
+		// create item
 		this.props.addItem(item);
 		// update component state
 		this.setState({ isAddItem: false });
@@ -77,7 +77,7 @@ class Inventory extends Component {
 }
 
 Inventory.propTypes = {
-	items: PropTypes.object.isRequired,
+	items: PropTypes.object, // optional - when list is initially created will not have items
 	addItem: PropTypes.func.isRequired,
 	addToList: PropTypes.func.isRequired,
 	updateItem: PropTypes.func.isRequired,

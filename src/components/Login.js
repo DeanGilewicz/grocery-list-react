@@ -1,10 +1,13 @@
 import React, { Component } from "react";
 import { signInWithPopup } from "firebase/auth";
-import { ref, onValue } from "firebase/database";
+import { child, get, onValue, ref, set } from "firebase/database";
 import PropTypes from "prop-types";
 import base from "../base";
+import { ErrorContext } from "../ErrorContext";
 
 class Login extends Component {
+	static contextType = ErrorContext;
+
 	constructor() {
 		super();
 
@@ -15,8 +18,8 @@ class Login extends Component {
 		this.logOut = this.logOut.bind(this);
 
 		this.state = {
-			uid: null,
 			groceryListUrls: null,
+			uid: null,
 		};
 	}
 
@@ -29,9 +32,7 @@ class Login extends Component {
 	}
 
 	goToList(groceryListKey) {
-		console.log("groceryListKey", groceryListKey);
 		const groceryListUrl = this.state.groceryListUrls[groceryListKey];
-		console.log("groceryListUrl", groceryListUrl);
 		// go to the associated grocery list
 		this.props.history.push(`/grocerylist/${groceryListUrl}`);
 	}
@@ -39,8 +40,7 @@ class Login extends Component {
 	authenticate() {
 		signInWithPopup(base.auth, base.provider)
 			.then((result) => {
-				let userId = result.user.uid;
-				this.setUpLoggedInUser(userId);
+				this.setUpLoggedInUser(result.user.uid);
 			})
 			.catch((error) => {
 				console.error(error);
@@ -49,62 +49,24 @@ class Login extends Component {
 	}
 
 	setUpLoggedInUser(userId) {
-		const dbRef = ref(base.base, "/", {
-			context: this,
-			asArray: true,
-		});
+		const dbRef = ref(base.base, "/");
 		onValue(dbRef, (snapshot) => {
 			const lists = snapshot.val();
-			// return "lists" that this user owns
-			console.log("lists", lists);
-			const ownedLists = Object.keys(lists).filter((key) => {
-				console.log("KEY", key);
-				return lists[key].owner === "WsCS06KvHJYOPtW6w4jS9CMnkPk1";
-			});
-			console.log("ownedLists", ownedLists);
 
-			// const ownedLists = groceryLists.filter(
-			// 	(groceryList) => groceryList.owner === userId
-			// );
-			// console.log("ownedLists", ownedLists);
-			// set state -> user id and users grocery lists
+			// retrieve any "lists" that this user owns
+			const ownedLists = Object.keys(lists).filter((key) => {
+				return lists[key].owner === userId;
+			});
+
+			// set state -> user id and user's grocery lists
 			this.setState({
 				uid: userId,
 				groceryListUrls: ownedLists,
 			});
 
-			// set key on session storage to use in App route since not assoicated by parent component
+			// set key on session storage to use in App route since not associated by parent component
 			return sessionStorage.setItem("userId", userId);
-			// return groceryLists;
 		});
-
-		// return base.base
-		// 	.fetch("/", {
-		// 		context: this,
-		// 		asArray: true,
-		// 	})
-		// 	.then((groceryLists) => {
-		// 		let userGroceryLists = groceryLists.map((groceryList) => {
-		// 			// if logged in user id matches grocery list owner id then return the grocery list url
-		// 			if (groceryList.owner === userId) {
-		// 				return groceryList.key;
-		// 			}
-		// 		});
-
-		// 		// set state -> user id and users grocery lists
-		// 		this.setState({
-		// 			uid: userId,
-		// 			groceryListUrls: userGroceryLists,
-		// 		});
-
-		// 		// set key on session storage to use in App route since not assoicated by parent component
-		// 		return sessionStorage.setItem("userId", userId);
-		// 	})
-		// 	.catch((error) => {
-		// 		//handle error
-		// 		console.error(error);
-		// 		return;
-		// 	});
 	}
 
 	logOut() {
@@ -121,50 +83,50 @@ class Login extends Component {
 	}
 
 	createGroceryList(e) {
+		// prevent form submit
 		e.preventDefault();
 
-		let newGroceryListName = this.groceryListNameInput.value;
+		const context = this.context;
 
-		// query firebase db to get all grocery lists
-		base.base
-			.fetch("/", {
-				context: this,
-				asArray: true,
-			})
-			.then((groceryLists) => {
-				let nameExists = groceryLists.find((groceryList) => {
-					//  return grocery list in db that has the name that user entered
-					return groceryList.key === newGroceryListName;
-				});
+		// remove all create-list errors
+		context.resetErrorsByType("create-list");
 
-				// handle if name already exists
-				if (nameExists) {
+		const newGroceryListName = this.groceryListNameInput;
+
+		// query DB to determine if name is in use
+		const dbRef = ref(base.base);
+		get(child(dbRef, `${newGroceryListName.value.toLowerCase()}`))
+			.then((snapshot) => {
+				if (snapshot.exists()) {
+					context.setError(
+						"create-list",
+						"Unable to create as name is already in use!"
+					);
 					return;
 				}
-
-				// add grocery list record in db and add owner to that record
-				base.base
-					.post(`/${newGroceryListName}`, {
-						data: { owner: this.state.uid },
+				// ok to create since name isn't in use
+				// lowercase so consistent when check for existence
+				set(ref(base.base, `${newGroceryListName.value.toLowerCase()}`), {
+					owner: this.state.uid,
+				})
+					.catch((err) => {
+						console.error("create-list set error", err);
+						context.setError(
+							"create-list",
+							"Oh no. Unable to create as something went wrong!"
+						);
 					})
-					.then(() => {
-						// copy existing state grocery list url obj
-						const groceryListUrls = [...this.state.groceryListUrls];
-						// add new grocery list url to state
-						groceryListUrls.push(newGroceryListName);
-						// update state to include this record
-						this.setState({ groceryListUrls: groceryListUrls });
-					})
-					.catch((error) => {
-						// handle error
-						console.error(error);
-						return;
+					.finally(() => {
+						// reset form field
+						newGroceryListName.value = "";
 					});
 			})
 			.catch((error) => {
-				// handle error
-				console.error(error);
-				return;
+				console.error("create-list get error", error);
+				context.setError(
+					"create-list",
+					"Oh no. Unable to create list as something went wrong!"
+				);
 			});
 	}
 
@@ -190,7 +152,7 @@ class Login extends Component {
 			return <div>{this.renderLogin()}</div>;
 		}
 
-		// check if any grocery lists created by logged in user
+		// check if any lists created by logged in user
 		if (this.state.uid && !this.state.groceryListUrls) {
 			return (
 				<div className="login">
@@ -223,8 +185,6 @@ class Login extends Component {
 
 		return (
 			<div className="login">
-				{/*<form action="" method="POST" onSubmit={this.goToList.bind(this)}>*/}
-
 				{logOut}
 
 				<p>Go to one of your already created grocery lists:</p>
@@ -264,6 +224,16 @@ class Login extends Component {
 					/>
 					<button type="submit">Go</button>
 				</form>
+
+				{this.context.getErrorsByType("create-list").length > 0 && (
+					<ul>
+						{this.context
+							.getErrorsByType("create-list")
+							.map(({ msg, type }) => (
+								<li key={`${type}-${msg}`}>{msg}</li>
+							))}
+					</ul>
+				)}
 			</div>
 		);
 	}
