@@ -11,21 +11,25 @@ class Item extends Component {
 		this.state = {
 			isViewDetails: false,
 			isEditItem: false,
+			theItem: null,
 		};
 	}
 
-	handleChange(e, key) {
-		const item = this.props.items[key];
-		// take a copy of that item and update it with the new data
+	componentDidMount() {
+		this.setState({ theItem: this.props.items[this.props.index] });
+	}
+
+	handleChange(e) {
+		// update local state so can make changes without persisting
 		const updatedItem = {
-			...item,
+			...this.state.theItem,
 			[e.target.name]: e.target.value,
 		};
-		this.props.updateItem(key, updatedItem);
+		this.setState({ theItem: updatedItem });
 	}
 
 	rendorInventory(key) {
-		const item = this.props.items[key];
+		const { theItem: item } = this.state;
 		return (
 			<div className="item_modal_edit">
 				<div className="item_modal_edit_content_container" key={key}>
@@ -38,7 +42,7 @@ class Item extends Component {
 							placeholder="name"
 							id="name"
 							onChange={(e) => {
-								this.handleChange(e, key);
+								this.handleChange(e);
 							}}
 						/>
 						<label htmlFor="brand">Brand:</label>
@@ -49,7 +53,7 @@ class Item extends Component {
 							placeholder="brand"
 							id="brand"
 							onChange={(e) => {
-								this.handleChange(e, key);
+								this.handleChange(e);
 							}}
 						/>
 						<label htmlFor="type">Type:</label>
@@ -59,7 +63,7 @@ class Item extends Component {
 							placeholder="type"
 							id="type"
 							onChange={(e) => {
-								this.handleChange(e, key);
+								this.handleChange(e);
 							}}
 						>
 							<option value="vegetables">vegetables</option>
@@ -76,7 +80,7 @@ class Item extends Component {
 							placeholder="description"
 							id="description"
 							onChange={(e) => {
-								this.handleChange(e, key);
+								this.handleChange(e);
 							}}
 						></textarea>
 						<label htmlFor="image">Image:</label>
@@ -87,7 +91,7 @@ class Item extends Component {
 							placeholder="image"
 							id="image"
 							onChange={(e) => {
-								this.handleChange(e, key);
+								this.handleChange(e);
 							}}
 						/>
 						<label htmlFor="stock">Stock:</label>
@@ -98,7 +102,7 @@ class Item extends Component {
 							placeholder="stock"
 							id="stock"
 							onChange={(e) => {
-								this.handleChange(e, key);
+								this.handleChange(e);
 							}}
 						/>
 						<label htmlFor="threshold">Threshold:</label>
@@ -109,7 +113,7 @@ class Item extends Component {
 							placeholder="threshold"
 							id="threshold"
 							onChange={(e) => {
-								this.handleChange(e, key);
+								this.handleChange(e);
 							}}
 						/>
 						<div className="item_modal_edit_content_actions">
@@ -124,6 +128,7 @@ class Item extends Component {
 							<button
 								className="btn btn_complete"
 								onClick={() => {
+									this.props.updateItem(key, this.state.theItem);
 									this.setState({ isEditItem: false });
 								}}
 							>
@@ -137,18 +142,23 @@ class Item extends Component {
 	}
 
 	render() {
-		const { details, index } = this.props; // const details = this.props.details; const index = this.props.index;
-		const button = !details.onOrder ? (
-			<button
-				onClick={() => {
-					this.props.addToList(index);
-				}}
-			>
-				Add To List
-			</button>
-		) : (
-			""
-		);
+		// index is the key (name)
+		// details is the item
+		const { details, index, list } = this.props;
+		// enabled if not on list already and stock is less than threshold
+		const button =
+			!list[index] &&
+			parseInt(details.stock, 10) < parseInt(details.threshold, 10) ? (
+				<button
+					onClick={() => {
+						this.props.addToList(index);
+					}}
+				>
+					Add To List
+				</button>
+			) : (
+				""
+			);
 
 		const itemImageStyle = { backgroundImage: "url(" + details.image + ")" };
 

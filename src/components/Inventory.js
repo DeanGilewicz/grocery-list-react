@@ -58,17 +58,25 @@ class Inventory extends Component {
 						Back To List
 					</button>
 					<ul className="items_available">
-						{Object.keys(this.props.items).map((key) => (
-							<Item
-								key={key}
-								index={key}
-								details={this.props.items[key]}
-								addToList={this.props.addToList}
-								items={this.props.items}
-								updateItem={this.props.updateItem}
-								deleteItem={this.props.deleteItem}
-							/>
-						))}
+						{this.props.items &&
+							Object.keys(this.props.items).map((key) => (
+								<Item
+									key={key}
+									index={key}
+									details={this.props.items[key]}
+									addToList={() => {
+										this.setState({ isViewInventory: false });
+										this.props.addToList(key);
+									}}
+									items={this.props.items}
+									list={this.props.list}
+									updateItem={this.props.updateItem}
+									deleteItem={() => {
+										this.setState({ isViewInventory: false });
+										this.props.deleteItem(key);
+									}}
+								/>
+							))}
 					</ul>
 				</div>
 			);

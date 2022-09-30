@@ -19,10 +19,7 @@ class AddGroceryItemForm extends Component {
 			description: this.description.value,
 			image: this.image.value,
 			stock: this.stock.value,
-			quantity: 0,
 			threshold: this.threshold.value,
-			onOrder: false,
-			isComplete: false,
 		};
 		this.props.addItem(item);
 		this.itemForm.reset();

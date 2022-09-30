@@ -26,20 +26,20 @@ class List extends Component {
 	}
 
 	renderList(key) {
-		const item = this.props.items[key];
-		const count = this.props.list[key];
+		const listItem = this.props.list[key];
 
 		// return if no item found
-		if (!item) {
+		if (!listItem) {
 			return;
 		}
 
 		const decreaseButton =
-			item.quantity > 1 ? (
+			listItem.quantity > 1 ? (
 				<button
-					disabled={item.isComplete}
+					className="list_item_qty_button"
+					disabled={listItem.onOrder}
 					onClick={() => {
-						this.props.decreaseItemOnList(key);
+						this.props.decreaseListItemQuantity(key);
 					}}
 				>
 					-
@@ -47,18 +47,47 @@ class List extends Component {
 			) : (
 				""
 			);
-		const statusButton = item.isComplete ? (
+
+		const increaseButton =
+			parseInt(listItem.stock, 10) + parseInt(listItem.quantity, 10) <
+			parseInt(listItem.threshold, 10) ? (
+				<button
+					className="list_item_qty_button"
+					disabled={listItem.onOrder}
+					onClick={() => {
+						this.props.increaseListItemQuantity(key);
+					}}
+				>
+					+
+				</button>
+			) : (
+				""
+			);
+
+		const onOrderButton = listItem.onOrder ? (
 			<button
 				onClick={() => {
-					this.props.markItemIncomplete(key);
+					this.props.markListItemNotOrdered(key);
 				}}
 			>
-				Complete
+				Ordered
 			</button>
 		) : (
 			<button
 				onClick={() => {
-					this.props.markItemComplete(key);
+					this.props.markListItemOrdered(key);
+				}}
+			>
+				Not Ordered
+			</button>
+		);
+
+		const isCompleteButton = (
+			<button
+				className="list_item_isComplete_button"
+				disabled={!listItem.onOrder}
+				onClick={() => {
+					this.props.markListItemComplete(key);
 				}}
 			>
 				Incomplete
@@ -66,7 +95,7 @@ class List extends Component {
 		);
 
 		return (
-			<li key={key} className={item.isComplete ? "complete" : ""}>
+			<li key={key} className={listItem.isComplete ? "complete" : ""}>
 				<span>
 					<button
 						onClick={() => {
@@ -77,36 +106,28 @@ class List extends Component {
 					</button>
 				</span>
 				<span>{decreaseButton}</span>
-				<span>{count}</span>
-				<span>
-					<button
-						disabled={item.isComplete}
-						onClick={() => {
-							this.props.increaseItemOnList(key);
-						}}
-					>
-						+
-					</button>
-				</span>
-				<span>{item.name}</span>
-				<span>{item.brand}</span>
-				<span>{item.type}</span>
-				<span>{statusButton}</span>
+				<span>{listItem.quantity}</span>
+				<span>{increaseButton}</span>
+				<span>{listItem.name}</span>
+				<span>{listItem.brand}</span>
+				<span>{listItem.type}</span>
+				<span>{onOrderButton}</span>
+				<span>{isCompleteButton}</span>
 			</li>
 		);
 	}
 
 	render() {
-		const listIds = Object.keys(this.props.list);
+		const listItemKeys = Object.keys(this.props.list);
 		const sortByName = this.state.sortByName ? "sorted" : "";
 		const sortByType = this.state.sortByType ? "sorted" : "";
-		if (typeof listIds !== "undefined" && listIds.length > 0) {
+		if (typeof listItemKeys !== "undefined" && listItemKeys.length > 0) {
 			return (
 				<div className="order">
 					<h2>List</h2>
 					<button
 						onClick={() => {
-							this.props.clearAllItemsFromList(listIds);
+							this.props.clearAllItemsFromList();
 						}}
 					>
 						Reset List
@@ -134,9 +155,10 @@ class List extends Component {
 							>
 								Type
 							</span>
+							<span>Ordered</span>
 							<span>Status</span>
 						</li>
-						{listIds.map(this.renderList)}
+						{listItemKeys.map(this.renderList)}
 					</ul>
 				</div>
 			);
@@ -155,14 +177,13 @@ class List extends Component {
 }
 
 List.propTypes = {
-	items: PropTypes.object.isRequired,
+	items: PropTypes.object, // optional - list may not contain items if delete all of them
 	list: PropTypes.object.isRequired,
 	sortItemsOnList: PropTypes.func.isRequired,
-	decreaseItemOnList: PropTypes.func.isRequired,
-	markItemIncomplete: PropTypes.func.isRequired,
-	markItemComplete: PropTypes.func.isRequired,
+	decreaseListItemQuantity: PropTypes.func.isRequired,
+	markListItemComplete: PropTypes.func.isRequired,
 	removeFromList: PropTypes.func.isRequired,
-	increaseItemOnList: PropTypes.func.isRequired,
+	increaseListItemQuantity: PropTypes.func.isRequired,
 	clearAllItemsFromList: PropTypes.func.isRequired,
 	populateListFromThreshold: PropTypes.func.isRequired,
 };

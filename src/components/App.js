@@ -1,5 +1,13 @@
 import React, { Component } from "react";
-import { child, get, onValue, ref, set, update } from "firebase/database";
+import {
+	child,
+	get,
+	onValue,
+	ref,
+	remove,
+	set,
+	update,
+} from "firebase/database";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import Header from "./Header";
@@ -31,11 +39,12 @@ class App extends Component {
 		this.addToList = this.addToList.bind(this);
 
 		// list component
-		this.increaseItemOnList = this.increaseItemOnList.bind(this);
-		this.decreaseItemOnList = this.decreaseItemOnList.bind(this);
+		this.increaseListItemQuantity = this.increaseListItemQuantity.bind(this);
+		this.decreaseListItemQuantity = this.decreaseListItemQuantity.bind(this);
 		this.removeFromList = this.removeFromList.bind(this);
-		this.markItemComplete = this.markItemComplete.bind(this);
-		this.markItemIncomplete = this.markItemIncomplete.bind(this);
+		this.markListItemOrdered = this.markListItemOrdered.bind(this);
+		this.markListItemNotOrdered = this.markListItemNotOrdered.bind(this);
+		this.markListItemComplete = this.markListItemComplete.bind(this);
 		this.clearAllItemsFromList = this.clearAllItemsFromList.bind(this);
 		this.populateListFromThreshold = this.populateListFromThreshold.bind(this);
 
@@ -45,7 +54,6 @@ class App extends Component {
 
 		// initial state
 		this.state = {
-			errors: [],
 			items: {},
 			list: {},
 		};
@@ -59,9 +67,10 @@ class App extends Component {
 			return this.props.history.push("/");
 		}
 
+		// current screen for grocery list (based on params - name)
 		const itemsParentName = this.props.match.params.groceryListId;
 
-		// logged in user is not owner of this grocery list then kick out to login screen
+		// if logged in user is not owner of this grocery list then kick out to login screen
 		const dbRef = ref(base.base, itemsParentName);
 		onValue(dbRef, (snapshot) => {
 			const itemsParent = snapshot.val();
@@ -70,27 +79,26 @@ class App extends Component {
 				return this.props.history.push("/");
 			}
 
-			this.setState({
-				items: itemsParent.items,
-			});
-			// check if there is any list in localStorage
+			// keep items in sync with Firebase
+			this.setState({ items: itemsParent.items });
+
+			// check if there is a list for this grocery name in localStorage
 			const localStorageRef = JSON.parse(
 				localStorage.getItem(`list-${this.props.match.params.groceryListId}`)
 			);
 
 			if (localStorageRef) {
-				// update our App component's list state
-				this.setState({
-					list: localStorageRef,
-				});
+				// set list from localStorage
+				this.setState({ list: localStorageRef });
 			}
 		});
 	}
 
-	componentDidUpdate(nextProps, nextState) {
+	// keep localStorage in sync with app state
+	componentDidUpdate(prevProps, prevState) {
 		localStorage.setItem(
 			`list-${this.props.match.params.groceryListId}`,
-			JSON.stringify(nextState.list)
+			JSON.stringify(this.state.list)
 		);
 	}
 
@@ -148,53 +156,75 @@ class App extends Component {
 
 	// update an existing item
 	updateItem(key, updatedItem) {
-		const items = { ...this.state.items };
-		items[key] = updatedItem;
-		this.setState({ items: items });
-		// TODO: this works but refactor
-		// update(ref(base.base, `demo/items/${key}`), {
-		// 	...updatedItem,
-		// 	threshold: 10,
-		// }).catch((err) => {
-		// 	console.error("create-item set error", err);
-		// 	// context.setError(
-		// 	// 	"create-item",
-		// 	// 	"Oh no. Unable to create item as something went wrong!"
-		// 	// );
-		// });
+		const itemsParentName = this.props.match.params.groceryListId;
+		const list = { ...this.state.list };
+
+		update(ref(base.base, `${itemsParentName}/items/${key}`), {
+			...updatedItem,
+		})
+			.then(() => {
+				const items = { ...this.state.items };
+				// check if item is on list (then is in localStorage)
+				if (list[key]) {
+					// we need to update localStorage list with updated item details
+					list[key] = { ...list[key], ...items[key] };
+					// update list state (localStorage)
+					this.setState({ list });
+				}
+			})
+			.catch((err) => {
+				console.error("update-item update error", err);
+				this.context.setError(
+					"update-item",
+					"Oh no. Unable to update item as something went wrong!"
+				);
+			});
 	}
 
 	// delete an item
 	deleteItem(key) {
+		const itemsParentName = this.props.match.params.groceryListId;
 		// copy existing state
 		const list = { ...this.state.list };
 		// copy existing state
-		const items = { ...this.state.items };
+		// const items = { ...this.state.items };
 		// delete items[key]; // typical way
-		items[key] = null; // firebase way
+		// items[key] = null; // firebase way
 		// check if item exists on list - if it does then remove it and provide info to user
-		if (list[key]) {
-			delete list[key];
-			// TODO: inform user item was removed from list since deleted
-		}
-		// update state for items
-		this.setState({ items: items, list: list });
+
+		// sync Firebase
+		remove(ref(base.base, `${itemsParentName}/items/${key}`))
+			.then(() => {
+				// update list state (localStorage)
+				if (list[key]) {
+					delete list[key];
+				}
+				this.setState({ list });
+			})
+			.catch((err) => {
+				console.error("delete-item remove error", err);
+				this.context.setError(
+					"remove-item",
+					"Oh no. Unable to delete item as something went wrong!"
+				);
+			});
 	}
 
 	// initially add item to list with quantity value of 1
 	addToList(key) {
 		// copy existing state
 		const list = { ...this.state.list };
-		// copy existing state
 		const items = { ...this.state.items };
-		// update onOrder property of this item since now on list
-		items[key].onOrder = false;
-		// update quantity property of this item
-		items[key].quantity = items[key].quantity = 1;
-		// add new number of item ordered to list
-		list[key] = items[key].quantity;
+		// copy base item to list
+		list[key] = items[key];
+		// set onOrder for this item on list
+		list[key].onOrder = false;
+		// set quantity property of this item
+		list[key].quantity = 1;
+		// set isComplete for this item on list
+		list[key].isComplete = false;
 		// update states for both list and items
-		this.setState({ list: list, items: items });
+		this.setState({ list, items });
 	}
 
 	// sort function - prop = property to sort by - order = asc or des
@@ -228,89 +258,72 @@ class App extends Component {
 		this.setState({ list: sortedObj });
 	}
 
-	// once item on list then delete from list and reset quantity to 0
 	removeFromList(key) {
 		// copy existing state
 		const list = { ...this.state.list };
-		// copy existing state
-		const items = { ...this.state.items };
-		// update onOrder property of this item since now removed from list
-		items[key].onOrder = false;
-		// update quantity property of this item
-		items[key].quantity = 0;
-		// update isComplete prop in case item has been completed
-		items[key].isComplete = false;
 		// remove item from list
 		delete list[key];
-		// update states for both list and items
-		this.setState({ list: list, items: items });
+		// update list state
+		this.setState({ list });
 	}
 
-	// once item on list then control quantity
-	increaseItemOnList(key) {
+	increaseListItemQuantity(key) {
 		// copy existing state
 		const list = { ...this.state.list };
-		// copy existing state
-		const items = { ...this.state.items };
-		// update quantity property of this item
-		items[key].quantity = items[key].quantity + 1;
-		// update number of item ordered from list
-		list[key] = items[key].quantity;
-		// update states for both list and items
-		this.setState({ list: list, items: items });
+		// update quantity property of this list item
+		list[key].quantity = list[key].quantity + 1;
+		// update list state
+		this.setState({ list });
 	}
 
-	// once item on list then control quantity
-	decreaseItemOnList(key) {
+	decreaseListItemQuantity(key) {
 		// copy existing state
 		const list = { ...this.state.list };
-		// copy existing state
-		const items = { ...this.state.items };
-		// update quantity property of this item
-		items[key].quantity = items[key].quantity - 1;
-		// decrease number of item ordered from list
-		list[key] = items[key].quantity;
-		// update states for both list and items
-		this.setState({ list: list, items: items });
+		// update quantity property of this list item
+		list[key].quantity = list[key].quantity - 1;
+		// update list state
+		this.setState({ list });
 	}
 
-	markItemComplete(key) {
+	markListItemOrdered(key) {
 		// copy existing state
-		const items = { ...this.state.items };
-		// add quantity to current stock
-		items[key].stock = parseInt(items[key].stock, 10) + items[key].quantity;
-		// update isComplete Property
-		items[key].isComplete = true;
-		// update state for items
-		this.setState({ items: items });
+		const list = { ...this.state.list };
+		// update onOrder
+		list[key].onOrder = true;
+		// update list state
+		this.setState({ list });
 	}
 
-	markItemIncomplete(key) {
+	markListItemNotOrdered(key) {
 		// copy existing state
-		const items = { ...this.state.items };
-		// remove quantity from current stock
-		items[key].stock = parseInt(items[key].stock, 10) - items[key].quantity;
-		// update isComplete Property
-		items[key].isComplete = false;
-		// update state for items
-		this.setState({ items: items });
+		const list = { ...this.state.list };
+		// update onOrder
+		list[key].onOrder = false;
+		// update list state
+		this.setState({ list });
 	}
 
-	clearAllItemsFromList(itemIds) {
+	markListItemComplete(key) {
+		// copy existing state
+		const list = { ...this.state.list };
+		const items = { ...this.state.items };
+		// update item quantity
+		items[key].stock = parseInt(items[key].stock, 10) + list[key].quantity;
+		// update isComplete
+		list[key].isComplete = true;
+		// update actual DB item
+		this.updateItem(key, items[key]);
+		// remove list item from list
+		this.removeFromList(key);
+	}
+
+	clearAllItemsFromList() {
 		// copy existing state
 		let list = { ...this.state.list };
-		// copy existing state
-		const items = { ...this.state.items };
 		// update list state
 		list = {};
-		// reset item properties - loop through items based on itemIds provided
-		itemIds.forEach((itemId) => {
-			items[itemId].onOrder = false;
-			items[itemId].isComplete = false;
-			items[itemId].quantity = 0;
-		});
-		// update state for items
-		this.setState({ list: list, items: items });
+		// update list state
+		this.setState({ list });
 	}
 
 	populateListFromThreshold() {
@@ -326,20 +339,23 @@ class App extends Component {
 
 		// get quantity difference of threshold minus stock for each item
 		Object.keys(items).forEach((key) => {
-			const quantityDifference = items[key].threshold - items[key].stock;
+			const quantityDifference =
+				parseInt(items[key].threshold, 10) - parseInt(items[key].stock, 10);
 			// if difference is not greater than zero then do not add item to list
 			if (quantityDifference <= 0) {
 				return;
 			}
-			items[key].onOrder = false;
-			// update quantity property of this item
-			items[key].quantity = quantityDifference;
-			// add new number of item ordered to list
-			list[key] = items[key].quantity;
+			// add default props to list item
+			list[key] = {
+				...items[key],
+				onOrder: false,
+				quantity: quantityDifference,
+				isComplete: false,
+			};
 		});
 
-		// update states for both list and items
-		this.setState({ list: list, items: items });
+		// update list state
+		this.setState({ list });
 	}
 
 	render() {
@@ -352,6 +368,7 @@ class App extends Component {
 				<div className="menu">
 					<Inventory
 						// loadSampleItems={this.loadSampleItems}
+						list={this.state.list}
 						items={this.state.items}
 						addItem={this.addItem}
 						updateItem={this.updateItem}
@@ -361,13 +378,13 @@ class App extends Component {
 				</div>
 				<div className="list">
 					<List
-						items={this.state.items}
 						list={this.state.list}
-						increaseItemOnList={this.increaseItemOnList}
-						decreaseItemOnList={this.decreaseItemOnList}
+						increaseListItemQuantity={this.increaseListItemQuantity}
+						decreaseListItemQuantity={this.decreaseListItemQuantity}
 						removeFromList={this.removeFromList}
-						markItemComplete={this.markItemComplete}
-						markItemIncomplete={this.markItemIncomplete}
+						markListItemOrdered={this.markListItemOrdered}
+						markListItemNotOrdered={this.markListItemNotOrdered}
+						markListItemComplete={this.markListItemComplete}
 						clearAllItemsFromList={this.clearAllItemsFromList}
 						sortItemsOnList={this.sortItemsOnList}
 						populateListFromThreshold={this.populateListFromThreshold}
