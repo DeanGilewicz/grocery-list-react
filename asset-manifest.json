@@ -1,6 +1,13 @@
 {
-  "main.css": "static/css/main.dba456b8.css",
-  "main.css.map": "static/css/main.dba456b8.css.map",
-  "main.js": "static/js/main.9933534b.js",
-  "main.js.map": "static/js/main.9933534b.js.map"
+  "files": {
+    "main.css": "/grocery-list-react/static/css/main.ca64615c.css",
+    "main.js": "/grocery-list-react/static/js/main.b534f598.js",
+    "index.html": "/grocery-list-react/index.html",
+    "main.ca64615c.css.map": "/grocery-list-react/static/css/main.ca64615c.css.map",
+    "main.b534f598.js.map": "/grocery-list-react/static/js/main.b534f598.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.ca64615c.css",
+    "static/js/main.b534f598.js"
+  ]
 }
