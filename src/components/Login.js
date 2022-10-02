@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { signInWithPopup } from "firebase/auth";
-import { child, get, onValue, ref, set } from "firebase/database";
+import { child, get, onValue, ref, remove, set } from "firebase/database";
 import PropTypes from "prop-types";
 import base from "../base";
 import { ErrorContext } from "../ErrorContext";
@@ -14,6 +14,7 @@ class Login extends Component {
 		this.authenticate = this.authenticate.bind(this);
 		this.renderLogin = this.renderLogin.bind(this);
 		this.createGroceryList = this.createGroceryList.bind(this);
+		this.deleteGroceryList = this.deleteGroceryList.bind(this);
 		this.setUpLoggedInUser = this.setUpLoggedInUser.bind(this);
 		this.logOut = this.logOut.bind(this);
 
@@ -91,11 +92,11 @@ class Login extends Component {
 		// remove all create-list errors
 		context.resetErrorsByType("create-list");
 
-		const newGroceryListName = this.groceryListNameInput;
+		const groceryListNameInput = this.groceryListNameInput;
 
 		// query DB to determine if name is in use
 		const dbRef = ref(base.base);
-		get(child(dbRef, `${newGroceryListName.value.toLowerCase()}`))
+		get(child(dbRef, `${groceryListNameInput.value.toLowerCase()}`))
 			.then((snapshot) => {
 				if (snapshot.exists()) {
 					context.setError(
@@ -106,7 +107,7 @@ class Login extends Component {
 				}
 				// ok to create since name isn't in use
 				// lowercase so consistent when check for existence
-				set(ref(base.base, `${newGroceryListName.value.toLowerCase()}`), {
+				set(ref(base.base, `${groceryListNameInput.value.toLowerCase()}`), {
 					owner: this.state.uid,
 				})
 					.catch((err) => {
@@ -118,7 +119,7 @@ class Login extends Component {
 					})
 					.finally(() => {
 						// reset form field
-						newGroceryListName.value = "";
+						groceryListNameInput.value = "";
 					});
 			})
 			.catch((error) => {
@@ -127,6 +128,43 @@ class Login extends Component {
 					"create-list",
 					"Oh no. Unable to create list as something went wrong!"
 				);
+			});
+	}
+
+	deleteGroceryList(e) {
+		// prevent form submit
+		e.preventDefault();
+
+		const context = this.context;
+
+		// remove all create-list errors
+		context.resetErrorsByType("delete-list");
+
+		const groceryListNameInput = this.groceryListNameInputDelete;
+
+		// show error if list doesn't exist / match
+		if (!this.state.groceryListUrls.includes(groceryListNameInput.value)) {
+			return this.context.setError("delete-list", "Grocery list not found!");
+		}
+
+		// remove list from DB
+		remove(ref(base.base, `${groceryListNameInput.value.toLowerCase()}`))
+			.then(() => {
+				// update localStorage to remove list
+				if (localStorage.getItem(`list-${groceryListNameInput.value}`)) {
+					localStorage.removeItem(`list-${groceryListNameInput.value}`);
+				}
+			})
+			.catch((err) => {
+				console.error("delete-list remove error", err);
+				this.context.setError(
+					"delete-list",
+					"Oh no. Unable to delete list as something went wrong!"
+				);
+			})
+			.finally(() => {
+				// reset form field
+				groceryListNameInput.value = "";
 			});
 	}
 
@@ -186,9 +224,7 @@ class Login extends Component {
 		return (
 			<div className="login">
 				{logOut}
-
 				<p>Go to one of your already created grocery lists:</p>
-
 				{Object.keys(this.state.groceryListUrls).map((key) => {
 					return (
 						<button
@@ -202,9 +238,7 @@ class Login extends Component {
 						</button>
 					);
 				})}
-
 				<p>Create a new grocery list:</p>
-
 				<form
 					action=""
 					method="POST"
@@ -222,13 +256,42 @@ class Login extends Component {
 							this.groceryListNameInput = input;
 						}}
 					/>
-					<button type="submit">Go</button>
+					<button type="submit">Create</button>
 				</form>
 
 				{this.context.getErrorsByType("create-list").length > 0 && (
 					<ul>
 						{this.context
 							.getErrorsByType("create-list")
+							.map(({ msg, type }) => (
+								<li key={`${type}-${msg}`}>{msg}</li>
+							))}
+					</ul>
+				)}
+				<p>Delete an existing grocery list:</p>
+				<form
+					action=""
+					method="POST"
+					className="login_form"
+					onSubmit={(e) => {
+						this.deleteGroceryList(e);
+					}}
+				>
+					<label htmlFor="name">Name</label>
+					<input
+						type="text"
+						name="groceryListNameDelete"
+						id="name"
+						ref={(input) => {
+							this.groceryListNameInputDelete = input;
+						}}
+					/>
+					<button type="submit">Delete</button>
+				</form>
+				{this.context.getErrorsByType("delete-list").length > 0 && (
+					<ul>
+						{this.context
+							.getErrorsByType("delete-list")
 							.map(({ msg, type }) => (
 								<li key={`${type}-${msg}`}>{msg}</li>
 							))}

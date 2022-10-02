@@ -5,24 +5,6 @@ class List extends Component {
 	constructor() {
 		super();
 		this.renderList = this.renderList.bind(this);
-		this.sortItemsOnList = this.sortItemsOnList.bind(this);
-
-		this.state = {
-			sortByName: false,
-			sortByType: false,
-		};
-	}
-
-	sortItemsOnList(sortBy, order) {
-		const mapObj = {
-			name: "sortByName",
-			type: "sortByType",
-		};
-		const stateValue = mapObj[sortBy];
-		// update state so can identity sort
-		this.setState({ [stateValue]: true });
-		// update global state
-		this.props.sortItemsOnList(sortBy, order);
 	}
 
 	renderList(key) {
@@ -99,7 +81,7 @@ class List extends Component {
 				<span>
 					<button
 						onClick={() => {
-							this.props.removeFromList(key);
+							this.props.removeItemFromList(key);
 						}}
 					>
 						&times;
@@ -119,8 +101,6 @@ class List extends Component {
 
 	render() {
 		const listItemKeys = Object.keys(this.props.list);
-		const sortByName = this.state.sortByName ? "sorted" : "";
-		const sortByType = this.state.sortByType ? "sorted" : "";
 		if (typeof listItemKeys !== "undefined" && listItemKeys.length > 0) {
 			return (
 				<div className="order">
@@ -138,23 +118,9 @@ class List extends Component {
 							<span></span>
 							<span>Qty</span>
 							<span></span>
-							<span
-								className={`sortBy ${sortByName}`}
-								onClick={() => {
-									this.sortItemsOnList("name", "dec");
-								}}
-							>
-								Name
-							</span>
+							<span>Name</span>
 							<span>Brand</span>
-							<span
-								className={`sortBy ${sortByType}`}
-								onClick={() => {
-									this.sortItemsOnList("type");
-								}}
-							>
-								Type
-							</span>
+							<span>Type</span>
 							<span>Ordered</span>
 							<span>Status</span>
 						</li>
@@ -179,10 +145,9 @@ class List extends Component {
 List.propTypes = {
 	items: PropTypes.object, // optional - list may not contain items if delete all of them
 	list: PropTypes.object.isRequired,
-	sortItemsOnList: PropTypes.func.isRequired,
 	decreaseListItemQuantity: PropTypes.func.isRequired,
 	markListItemComplete: PropTypes.func.isRequired,
-	removeFromList: PropTypes.func.isRequired,
+	removeItemFromList: PropTypes.func.isRequired,
 	increaseListItemQuantity: PropTypes.func.isRequired,
 	clearAllItemsFromList: PropTypes.func.isRequired,
 	populateListFromThreshold: PropTypes.func.isRequired,

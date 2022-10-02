@@ -33,8 +33,13 @@ class Root extends Component {
 	}
 
 	setError(type, msg) {
+		// ideally we wouldn't need to do this but for
+		// some edge cases errors isn't being reset
+		const resetTypeErrors = this.state.errors.filter(
+			(err) => err.type !== type
+		);
 		this.setState({
-			errors: [...this.state.errors, { type, msg }],
+			errors: [...resetTypeErrors, { type, msg }],
 		});
 	}
 
@@ -63,17 +68,11 @@ class Root extends Component {
 					>
 						<div>
 							<Switch>
-								<Route
-									exact
-									path="/"
-									component={Login}
-									// render={ (match) => <Login routeInfo={match} /> }
-								/>
+								<Route exact path="/" component={Login} />
 								<Route
 									exact
 									path="/grocerylist/:groceryListId"
 									component={App}
-									// render={ (match) => <App match={match} /> }
 								/>
 								<Route component={NotFound} />
 							</Switch>

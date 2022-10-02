@@ -41,16 +41,12 @@ class App extends Component {
 		// list component
 		this.increaseListItemQuantity = this.increaseListItemQuantity.bind(this);
 		this.decreaseListItemQuantity = this.decreaseListItemQuantity.bind(this);
-		this.removeFromList = this.removeFromList.bind(this);
+		this.removeItemFromList = this.removeItemFromList.bind(this);
 		this.markListItemOrdered = this.markListItemOrdered.bind(this);
 		this.markListItemNotOrdered = this.markListItemNotOrdered.bind(this);
 		this.markListItemComplete = this.markListItemComplete.bind(this);
 		this.clearAllItemsFromList = this.clearAllItemsFromList.bind(this);
 		this.populateListFromThreshold = this.populateListFromThreshold.bind(this);
-
-		// app component
-		this.sortItemsOnList = this.sortItemsOnList.bind(this);
-		this.sortFn = this.sortFn.bind(this);
 
 		// initial state
 		this.state = {
@@ -73,23 +69,25 @@ class App extends Component {
 		// if logged in user is not owner of this grocery list then kick out to login screen
 		const dbRef = ref(base.base, itemsParentName);
 		onValue(dbRef, (snapshot) => {
+			// itemsParent will be null when deleting a grocery list from the login screen
 			const itemsParent = snapshot.val();
+			if (itemsParent) {
+				if (itemsParent.owner !== userId) {
+					return this.props.history.push("/");
+				}
 
-			if (itemsParent.owner !== userId) {
-				return this.props.history.push("/");
-			}
+				// keep items in sync with Firebase
+				this.setState({ items: itemsParent.items });
 
-			// keep items in sync with Firebase
-			this.setState({ items: itemsParent.items });
+				// check if there is a list for this grocery name in localStorage
+				const localStorageRef = JSON.parse(
+					localStorage.getItem(`list-${this.props.match.params.groceryListId}`)
+				);
 
-			// check if there is a list for this grocery name in localStorage
-			const localStorageRef = JSON.parse(
-				localStorage.getItem(`list-${this.props.match.params.groceryListId}`)
-			);
-
-			if (localStorageRef) {
-				// set list from localStorage
-				this.setState({ list: localStorageRef });
+				if (localStorageRef) {
+					// set list from localStorage
+					this.setState({ list: localStorageRef });
+				}
 			}
 		});
 	}
@@ -186,13 +184,8 @@ class App extends Component {
 		const itemsParentName = this.props.match.params.groceryListId;
 		// copy existing state
 		const list = { ...this.state.list };
-		// copy existing state
-		// const items = { ...this.state.items };
-		// delete items[key]; // typical way
-		// items[key] = null; // firebase way
-		// check if item exists on list - if it does then remove it and provide info to user
 
-		// sync Firebase
+		// remove from DB
 		remove(ref(base.base, `${itemsParentName}/items/${key}`))
 			.then(() => {
 				// update list state (localStorage)
@@ -217,48 +210,15 @@ class App extends Component {
 		const items = { ...this.state.items };
 		// copy base item to list
 		list[key] = items[key];
-		// set onOrder for this item on list
+		// set props for this item on list
 		list[key].onOrder = false;
-		// set quantity property of this item
 		list[key].quantity = 1;
-		// set isComplete for this item on list
 		list[key].isComplete = false;
-		// update states for both list and items
-		this.setState({ list, items });
+		// update list state
+		this.setState({ list });
 	}
 
-	// sort function - prop = property to sort by - order = asc or des
-	sortFn(prop, order = "asc") {
-		// copy existing state
-		const items = { ...this.state.items };
-		return function (a, b) {
-			if (order !== "asc") {
-				return items[a][prop] < items[b][prop];
-			}
-			return items[a][prop] > items[b][prop];
-		};
-	}
-
-	// filter items on list
-	sortItemsOnList(sortBy, order) {
-		// copy existing state
-		const items = { ...this.state.items };
-		// copy existing state
-		const list = { ...this.state.list };
-		// sorted array ref
-		const sortedList = Object.keys(list).sort(this.sortFn(sortBy, order));
-		// set an object
-		let sortedObj = {};
-		// loop through the listids on list and set up obj data to be returned
-		sortedList.forEach((itemKey) => {
-			// get quantity for items on list
-			sortedObj[itemKey] = items[itemKey].quantity;
-		});
-		// update list state to use sorted items order
-		this.setState({ list: sortedObj });
-	}
-
-	removeFromList(key) {
+	removeItemFromList(key) {
 		// copy existing state
 		const list = { ...this.state.list };
 		// remove item from list
@@ -314,13 +274,13 @@ class App extends Component {
 		// update actual DB item
 		this.updateItem(key, items[key]);
 		// remove list item from list
-		this.removeFromList(key);
+		this.removeItemFromList(key);
 	}
 
 	clearAllItemsFromList() {
 		// copy existing state
 		let list = { ...this.state.list };
-		// update list state
+		// update list
 		list = {};
 		// update list state
 		this.setState({ list });
@@ -329,14 +289,11 @@ class App extends Component {
 	populateListFromThreshold() {
 		// copy existing state
 		const list = { ...this.state.list };
-		// copy existing state
 		const items = { ...this.state.items };
-
 		// only allow if list is empty
 		if (Object.keys(list).length > 0 && list.constructor === Object) {
 			return;
 		}
-
 		// get quantity difference of threshold minus stock for each item
 		Object.keys(items).forEach((key) => {
 			const quantityDifference =
@@ -353,7 +310,6 @@ class App extends Component {
 				isComplete: false,
 			};
 		});
-
 		// update list state
 		this.setState({ list });
 	}
@@ -381,12 +337,11 @@ class App extends Component {
 						list={this.state.list}
 						increaseListItemQuantity={this.increaseListItemQuantity}
 						decreaseListItemQuantity={this.decreaseListItemQuantity}
-						removeFromList={this.removeFromList}
+						removeItemFromList={this.removeItemFromList}
 						markListItemOrdered={this.markListItemOrdered}
 						markListItemNotOrdered={this.markListItemNotOrdered}
 						markListItemComplete={this.markListItemComplete}
 						clearAllItemsFromList={this.clearAllItemsFromList}
-						sortItemsOnList={this.sortItemsOnList}
 						populateListFromThreshold={this.populateListFromThreshold}
 					/>
 				</div>

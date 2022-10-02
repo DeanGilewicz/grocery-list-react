@@ -56,6 +56,10 @@ button,
 	font-size: 14px;
 }
 
+.login_form input {
+	height: 30px;
+}
+
 .app {
 	display: flex;
 	flex-wrap: wrap;
@@ -89,41 +93,6 @@ button,
 	font-weight: bold;
 	background-color: #cccccc;
 	color: #ffffff;
-}
-
-.list_headings .sortBy {
-	position: relative;
-	cursor: pointer;
-}
-
-.list_headings .sortBy::after {
-	content: "";
-	position: absolute;
-	top: 50%;
-	right: 10px;
-	z-index: 1;
-	transform: translateY(-50%);
-	width: 0;
-	height: 0;
-	border-top: 8px solid #ffffff;
-	border-left: 8px solid transparent;
-	border-right: 8px solid transparent;
-	border-bottom: none;
-}
-
-.list_headings .sortBy.sorted::after {
-	content: "";
-	position: absolute;
-	top: 50%;
-	right: 10px;
-	z-index: 1;
-	transform: translateY(-50%);
-	width: 0;
-	height: 0;
-	border-bottom: 8px solid #ffffff;
-	border-left: 8px solid transparent;
-	border-right: 8px solid transparent;
-	border-top: none;
 }
 
 .list_item_qty_button:disabled {
