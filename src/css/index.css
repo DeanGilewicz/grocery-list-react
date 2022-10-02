@@ -22,7 +22,7 @@ h1 {
 
 select {
 	border: none;
-    border-radius: 0;
+	border-radius: 0;
 	width: 100%;
 	height: 24px;
 	background-color: #ffffff;
@@ -54,6 +54,10 @@ button,
 .login_form label {
 	margin-right: 10px;
 	font-size: 14px;
+}
+
+.login_form input {
+	height: 30px;
 }
 
 .app {
@@ -91,39 +95,12 @@ button,
 	color: #ffffff;
 }
 
-.list_headings .sortBy {
-	position: relative;
-	cursor: pointer;
+.list_item_qty_button:disabled {
+	background-color: #cccccc;
 }
 
-.list_headings .sortBy::after {
-	content: "";
-	position: absolute;
-	top: 50%;
-	right: 20px;
-	z-index: 1;
-	transform: translateY(-50%);
-	width: 0;
-	height: 0;
-	border-top: 8px solid #ffffff;
-	border-left: 8px solid transparent;
-	border-right: 8px solid transparent;
-	border-bottom: none;
-}
-
-.list_headings .sortBy.sorted::after {
-	content: "";
-	position: absolute;
-	top: 50%;
-	right: 20px;
-	z-index: 1;
-	transform: translateY(-50%);
-	width: 0;
-	height: 0;
-	border-bottom: 8px solid #ffffff;
-	border-left: 8px solid transparent;
-	border-right: 8px solid transparent;
-	border-top: none;
+.list_item_isComplete_button:disabled {
+	background-color: #cccccc;
 }
 
 .menu {
@@ -157,7 +134,7 @@ button,
 	margin: 0.5rem 1%;
 	padding: 20px;
 	border: 1px solid #adbce6;
-	background-color: #ade6d8;;
+	background-color: #ade6d8;
 }
 
 @media (min-width: 768px) {
@@ -192,7 +169,7 @@ button,
 	right: 0;
 	bottom: 0;
 	z-index: 3;
-	background: rgba(0,0,0,0.7);
+	background: rgba(0, 0, 0, 0.7);
 }
 
 .items_modal_view {
@@ -241,7 +218,7 @@ button,
 	flex-direction: row;
 	justify-content: space-between;
 	margin-top: 2rem;
-	margin-bottom: 2rem;	
+	margin-bottom: 2rem;
 }
 
 .inventory_modal_add_content_actions .btn,
@@ -298,7 +275,6 @@ button,
 	}
 }
 
-
 @media (min-width: 768px) {
 	.order li:first-child span {
 		padding-top: 1rem;
@@ -343,17 +319,26 @@ button,
 
 .order li span:nth-child(5),
 .order li span:nth-child(6),
-.order li span:nth-child(7) {
+.order li span:nth-child(7),
+.order li span:nth-child(8) {
 	display: block;
 }
 
 @media (min-width: 768px) {
 	.order li span:nth-child(5),
 	.order li span:nth-child(6),
-	.order li span:nth-child(7) {
+	.order li span:nth-child(7),
+	.order li span:nth-child(8) {
 		display: table-cell;
 	}
-} 
+}
+
+@media (min-width: 768px) {
+	.order li span:last-child,
+	.order li span:nth-last-child(2) {
+		width: 120px;
+	}
+}
 
 @media (min-width: 768px) {
 	.order li span:last-child {
@@ -369,7 +354,3 @@ button,
 .order li:nth-child(even) {
 	background-color: #efefef;
 }
-
-
-
-
