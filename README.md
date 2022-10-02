@@ -44,7 +44,7 @@ There were several reasons for working on this project, including the chance to:
 - use class components
 - handle errors with context
 - integrate with Firebase Realtime Database
-- work with Firebase DB rules
+- work with Firebase DB [rules](https://firebase.google.com/docs/rules)
 - implement github auth via Firebase
 - use localStorage
 - use sessionStorage
